@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/bono2666/Library/CloudStorage/OneDrive-Personal/Being Worked On/Sahabat Aqiqah/aqiqahon/venv"
+VIRTUAL_ENV="/Users/bono2666/Library/CloudStorage/OneDrive-Personal/Being Worked On/Al Ukhuwah/marbot/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
