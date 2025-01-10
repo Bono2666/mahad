@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Masakan {% endblock title %}
+{% block title %} Ruangan {% endblock title %}
 
 {% block content %}
 
@@ -11,10 +11,10 @@
             <div class="card mb-4 p-4">
                 <div class="row mb-4">
                     <div class="col-6 d-flex align-items-center">
-                        <h4 class="mb-2">Masakan</h4>
+                        <h4 class="mb-2">Ruangan</h4>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-sm bg-gradient-primary mb-0 {% if not btn.add and not request.user.is_superuser %}disabled{% endif %}" href="{% url 'cuisine-add' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Masakan</a>
+                        <a class="btn btn-sm bg-gradient-primary mb-0 {% if not btn.add and not request.user.is_superuser %}disabled{% endif %}" href="{% url 'room-add' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Ruangan</a>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
@@ -22,23 +22,23 @@
                         <table class="table hover align-items-center mb-0" id="myTable">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID Masakan
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID Ruangan
                                     </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Masakan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Ruangan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in data %}
-                                <tr data-href="{% url 'cuisine-view' item.cuisine_id %}" class="cursor-pointer">
+                                <tr data-href="{% url 'room-view' item.room_id %}" class="cursor-pointer">
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.cuisine_id }}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.room_id }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <h6 class="mb-0 text-sm">{{ item.cuisine_name }}</h6>                   
+                                        <h6 class="mb-0 text-sm">{{ item.room_name }}</h6>                   
                                     </td>
                                 </tr>
                                 {% endfor %}

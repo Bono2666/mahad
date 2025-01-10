@@ -438,47 +438,47 @@ class FormChannelView(ModelForm):
         fields = ['channel_id', 'channel_name']
 
 
-class FormCuisine(ModelForm):
+class FormRoom(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(FormCuisine, self).__init__(*args, **kwargs)
+        super(FormRoom, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['cuisine_id'].label = 'ID Masakan'
-        self.fields['cuisine_name'].label = 'Nama Masakan'
-        self.fields['cuisine_id'].widget = forms.TextInput(
+        self.fields['room_id'].label = 'ID Ruangan'
+        self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['room_id'].widget = forms.TextInput(
             {'class': 'form-control-sm text-uppercase'})
-        self.fields['cuisine_name'].widget = forms.TextInput(
+        self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
 
     class Meta:
-        model = Cuisine
+        model = Room
         exclude = ['entry_date', 'entry_by', 'update_date', 'update_by']
 
 
-class FormCuisineUpdate(ModelForm):
+class FormRoomUpdate(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(FormCuisineUpdate, self).__init__(*args, **kwargs)
+        super(FormRoomUpdate, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['cuisine_name'].label = 'Nama Masakan'
-        self.fields['cuisine_name'].widget = forms.TextInput(
+        self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
 
     class Meta:
-        model = Cuisine
-        exclude = ['cuisine_id', 'entry_date',
+        model = Room
+        exclude = ['room_id', 'entry_date',
                    'entry_by', 'update_date', 'update_by']
 
 
-class FormCuisineView(ModelForm):
+class FormRoomView(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(FormCuisineView, self).__init__(*args, **kwargs)
+        super(FormRoomView, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['cuisine_name'].label = 'Nama Masakan'
-        self.fields['cuisine_name'].widget = forms.TextInput(
+        self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm', 'readonly': 'readonly'})
 
     class Meta:
-        model = Cuisine
-        fields = ['cuisine_id', 'cuisine_name']
+        model = Room
+        fields = ['room_id', 'room_name']
 
 
 class FormEquipment(ModelForm):
@@ -1256,25 +1256,6 @@ class FormOrderChildUpdate(ModelForm):
         widgets = {
             'child_birth': DateInput(attrs={'class': 'form-control form-control-sm', 'data-provide': 'datepicker', 'data-date-format': 'dd/mm/yyyy'}),
         }
-
-
-class FormOrderPackage(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(FormOrderPackage, self).__init__(*args, **kwargs)
-        self.label_suffix = ''
-        self.fields['order'].widget = forms.TextInput(
-            attrs={'class': 'd-none'})
-        self.fields['quantity'].label = 'Jumlah Paket'
-        self.fields['total_price'].label = 'Total Harga'
-        self.fields['quantity'].widget = forms.NumberInput(
-            attrs={'class': 'form-control-sm', 'min': '1'})
-        self.fields['total_price'].widget = forms.NumberInput(
-            attrs={'class': 'form-control-sm no-spinners', 'readonly': 'readonly'})
-
-    class Meta:
-        model = OrderPackage
-        exclude = ['category', 'package', 'type', 'entry_date', 'main_cuisine', 'sub_cuisine', 'side_cuisine1', 'side_cuisine2', 'side_cuisine3', 'side_cuisine4', 'side_cuisine5', 'unit_price', 'extra_price', 'rice', 'bag', 'box_type',
-                   'entry_by', 'update_date', 'update_by']
 
 
 class FormOrderConfirmUpdate(ModelForm):

@@ -1,23 +1,23 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Buat Masakan Baru {% endblock title %}
+{% block title %} Buat Ruangan Baru {% endblock title %}
 
 {% block content %}
 
 <div class="container-fluid mt-0">
     <div class="row">
         <div class="col-xl-12 order-xl-1">
-            <form action="{% url 'cuisine-add' %}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'room-add' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-6 d-flex align-items-center">
-                                <h4 class="mb-2">Buat Masakan Baru</h4>
+                                <h4 class="mb-2">Buat Ruangan Baru</h4>
                             </div>
                             <div class="col-6 text-end">
                                 <button type="submit" class="btn btn-sm bg-gradient-primary mb-0"><i class="fas fa-save"></i>&nbsp;&nbsp;Simpan</button>
-                                <a href="{% url 'cuisine-index' %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Batal</a>
+                                <a href="{% url 'room-index' %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Batal</a>
                             </div>
                         </div>
                     </div>
@@ -26,9 +26,9 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="shadow-none">
-                                        {{ form.cuisine_id.label_tag }}{{ form.cuisine_id }}
+                                        {{ form.room_id.label_tag }}{{ form.room_id }}
                                         <div class="text-sm text-danger">
-                                            {{ form.cuisine_id.errors }}
+                                            {{ form.room_id.errors }}
                                         </div>
                                     </div>
                                 </div>
@@ -36,9 +36,9 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="shadow-none">
-                                        {{ form.cuisine_name.label_tag }}{{ form.cuisine_name }}
+                                        {{ form.room_name.label_tag }}{{ form.room_name }}
                                         <div class="text-sm text-danger">
-                                            {{ form.cuisine_name.errors }}
+                                            {{ form.room_name.errors }}
                                         </div>
                                     </div>
                                 </div>

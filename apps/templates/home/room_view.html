@@ -1,0 +1,251 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} View Ruangan {% endblock title %}
+
+{% block content %}
+
+<div class="container-fluid mt-0">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <form action="{% url 'room-update' data.room_id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6 d-flex align-items-center">
+                                <h4 class="mb-2">ID Ruangan: {{ data.room_id }}</h4>
+                            </div>
+                            <div class="col-6 text-end">
+                                <a href="{% if crud == 'view' %}{% url 'room-index' %}{% else %}{% url 'room-view' data.room_id %}{% endif %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;{% if crud == 'view' %}Kembali{% else %}Batal{% endif %}</a>
+                                <a href="{% url 'room-update' data.room_id %}" class="btn btn-sm bg-gradient-dark mb-0 {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %}" {% if crud == 'update' %}hidden{% endif %}><i class="fas fa-edit"></i>&nbsp;&nbsp;Edit</a>
+                                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0" {% if crud == 'view' %}hidden{% endif %}><i class="fas fa-save"></i>&nbsp;&nbsp;Simpan</button>
+                                <button type="button" class="btn btn-sm bg-gradient-primary mb-0 {% if not btn.delete and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}" data-bs-toggle="modal" data-bs-target="#confirm-{{ data.room_id }}"><i class="fas fa-trash"></i>&nbsp;&nbsp;Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="confirm-{{ data.room_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
+                                </div>
+                                <div class="modal-body border-bottom-0">
+                                    Anda yakin ingin menghapus ruangan <strong>{{ data.room_name }}</strong>?
+                                </div>
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-sm bg-gradient-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <a href="{% url 'room-delete' data.room_id %}" role="button" class="btn btn-sm bg-gradient-primary text-white">Hapus
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="pl-lg-0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="shadow-none">
+                                        {{ form.room_name.label_tag }}{{ form.room_name }}
+                                        <div class="text-sm text-danger">
+                                            {{ form.room_name.errors }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container-fluid py-2">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 p-4">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-sm text-body {% if tab == 'task' %}active{% endif %}" id="task-tab" data-bs-toggle="tab" data-bs-target="#task-tab-pane" type="button"
+                            role="tab" aria-controls="task-tab-pane" aria-selected="true">Tugas</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade {% if tab == 'task' %}show active{% endif %}" id="task-tab-pane" role="tabpanel" aria-labelledby="task-tab" tabindex="0">
+                        <div class="row">
+                            <div class="col-6 d-flex align-items-center">
+                                <h5 class="mb-0"></h5>
+                            </div>
+                            <div class="col-6 text-end">
+                                <button id="myBtn" type="button" class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#dialog-popup" {% if not btn.edit and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Tugas</button>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ModalLabel">Input Tugas</h5>
+                                    </div>
+                                    <form method="post" action="{% url 'room-view' data.room_id %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="modal-body border-bottom-0">
+                                            
+                                        </div>
+                                        <div class="modal-footer border-0">
+                                            <button type="button" class="btn btn-sm bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-sm bg-gradient-primary text-white">Simpan
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body px-0 pt-0 pb-2">
+                            <div class="table-responsive p-0">
+                                <table class="table {% if crud == 'view' %}hover{% endif %} align-items-center mb-0" id="tabTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Nama Menu</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Tambah</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Ubah</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Hapus</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in auth %}
+                                        <tr {% if crud == 'view' %}class="cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirm-{{ item.menu_id }}"{% endif %}>
+                                            <td>
+                                                <div class="d-flex pe-2 py-0">
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                        <h6 class="mb-0 text-sm">{{ item.menu }}</h6>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.add }}" {% if item.add %}checked{% endif %}/>                   
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.edit }}" {% if item.edit %}checked{% endif %}/>
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.delete }}" {% if item.delete %}checked{% endif %}/>
+                                            </td>
+                                            <td>
+                                                <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.menu_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle"></i></button>
+                                            </td>
+                                            <div class="modal fade" id="delete-{{ item.menu_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
+                                                        </div>
+                                                        <div class="modal-body border-bottom-0">
+                                                            Anda yakin akan menghapus menu <strong>{{ item.menu }}</strong>?
+                                                        </div>
+                                                        <div class="modal-footer border-0">
+                                                            <button role="button" class="btn bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
+                                                            <a href="{% url 'auth-delete' item.user_id item.menu_id %}" role="button" class="btn bg-gradient-primary text-white">Hapus
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </tr>
+                                        <div class="modal fade" id="confirm-{{ item.menu_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="ModalLabel">Menu: {{ item.menu }}</h5>
+                                                    </div>
+                                                    <form method="post" action="{% url 'auth-update' item.user_id item.menu_id %}" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body border-bottom-0">
+                                                            <div class="pl-lg-0">
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group shadow-none">
+                                                                            <input type="checkbox" class="border mt-1" name="add" value="{{ item.add }}" {% if item.add %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Tambah</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group shadow-none">
+                                                                            <input type="checkbox" class="border mt-1" name="edit" value="{{ item.edit }}" {% if item.edit %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Ubah</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group shadow-none">
+                                                                            <input type="checkbox" class="border mt-1" name="delete" value="{{ item.delete }}" {% if item.delete %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Hapus</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-0">
+                                                            <button type="button" class="btn bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn bg-gradient-primary text-white {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %}">Simpan</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#tabTable').DataTable({
+            'pageLength': 10,
+            'lengthMenu': [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'All']],
+            'language': {
+                'search': 'Cari: ',
+                'info': 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                'lengthMenu': 'Tampilkan _MENU_ data',
+                'infoEmpty': '',
+                'zeroRecords': 'Tidak ada data',
+                'paginate': {
+                    'next': 'Selanjutnya',
+                    'previous': 'Sebelumnya'
+                }
+            }
+        });
+
+        let btn = document.getElementsByClassName('paginate_button');
+        for (const button of btn) {
+            button.classList.add('border-radius-top-start-circle', 'border-radius-bottom-end-circle', 'border-radius-top-end-circle', 'border-radius-bottom-start-circle');
+        }
+
+        let btn2 = document.getElementsByClassName('paginate_button next', 'paginate_button previous');
+        for (const button of btn2) {
+            button.hover(function() {
+                $(this).css('background-color', 'transparent');
+            });
+        }
+    } );
+</script>
+{% endblock javascripts %}
