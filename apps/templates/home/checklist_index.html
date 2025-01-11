@@ -27,18 +27,16 @@
                             </thead>
                             <tbody>
                                 {% for item in data %}
-                                <tr data-href="{% url 'order-view' item.order_id '0' '0' '0' '0' %}" class="cursor-pointer">
+                                <tr data-href="{% url 'checklist-view' item.room_id %}" class="cursor-pointer">
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.regional.area_name }}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.room_name }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <a class="btn-icon-only border-0 text-primary px-2" data-toggle="tooltip" title="Invoice" {% if item.order_status != 'DRAFT' and item.order_status != 'BATAL' %}href="{% url 'order-invoice' item.order_id %}" target="_blank"{% endif %}><i class="fas fa-file-invoice"></i></a>
-                                        <a class="btn-icon-only border-0 text-primary px-2" data-toggle="tooltip" title="Surat Jalan" {% if item.order_status != "DRAFT" and item.order_status != "BATAL" %}href="{% url 'order-bap' item.order_id %}" target="_blank"{% endif %}><i class="fas fa-truck"></i></a>
-                                        <a class="btn-icon-only border-0 text-primary px-2" data-toggle="tooltip" title="Checklist Form" {% if item.order_status != "DRAFT" and item.order_status != "BATAL" %}href="{% url 'order-checklist' item.order_id %}" target="_blank"{% endif %}><i class="fas fa-list-ul"></i></a>
+                                        <!-- <a class="btn-icon-only border-0 text-primary px-2" data-toggle="tooltip" title="Invoice"><i class="fas fa-file-invoice"></i></a> -->
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -78,7 +76,6 @@
             });
         } else {
             new DataTable('#myTable', {
-                'scrollX': true,
                 'pageLength': 25,
                 'lengthMenu': [25, 50, 100, 250, 500],
                 'order': [[1, 'desc']],
@@ -104,6 +101,7 @@
     
     $(document).on('click', 'tbody tr td:not(:last-child)', function() {
         var href = $(this).parent().data('href');
+        
         if(href) { // Check if href data exists
             window.location = href;
         } else {

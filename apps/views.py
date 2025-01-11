@@ -969,10 +969,18 @@ def room_add(request):
 def room_view(request, _id):
     rooms = Room.objects.get(room_id=_id)
     form = FormRoomView(instance=rooms)
+    tasks = Task.objects.filter(room_id=_id)
+
+    if request.POST:
+        task = Task(room_id=_id, task_name=request.POST.get('task_name'))
+        task.save()
+
+        return HttpResponseRedirect(reverse('room-view', args=[_id, ]))
 
     context = {
         'form': form,
         'data': rooms,
+        'tasks': tasks,
         'tab': 'task',
         'segment': 'room',
         'group_segment': 'master',
@@ -1017,6 +1025,28 @@ def room_delete(request, _id):
 
     rooms.delete()
     return HttpResponseRedirect(reverse('room-index'))
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='ROOM')
+def task_update(request, _id):
+    tasks = Task.objects.get(task_id=_id)
+    if request.POST:
+        tasks.task_name = request.POST.get('task_name')
+        tasks.save()
+
+        return HttpResponseRedirect(reverse('room-view', args=[tasks.room_id, ]))
+
+    return render(request, 'home/room_view.html')
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='ROOM')
+def task_delete(request, _id):
+    tasks = Task.objects.get(task_id=_id)
+
+    tasks.delete()
+    return HttpResponseRedirect(reverse('room-view', args=[tasks.room_id, ]))
 
 
 @login_required(login_url='/login/')
@@ -3497,6 +3527,88 @@ def form_index(request):
     }
 
     return render(request, 'home/form_index.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CHECKLIST')
+def checklist_index(request):
+    room = Room.objects.all()
+
+    context = {
+        'data': room,
+        'segment': 'checklist',
+        'group_segment': 'job',
+        'crud': 'index',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CHECKLIST') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/checklist_index.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CHECKLIST')
+def checklist_view(request, _id):
+    room = Room.objects.get(room_id=_id)
+    tasks = Task.objects.filter(room_id=_id)
+    checklist = Checklist.objects.filter(checklist_date=datetime.date.today(
+    )) if Checklist.objects.filter(checklist_date=datetime.date.today()) else None
+
+    if not checklist:
+        for task in tasks:
+            new_checklist = Checklist(
+                task=task,
+                checklist_date=datetime.date.today(),
+            )
+            new_checklist.save()
+
+    today_checklist = Checklist.objects.filter(
+        checklist_date=datetime.date.today())
+
+    context = {
+        'room': room,
+        'data': today_checklist,
+        'segment': 'checklist',
+        'group_segment': 'job',
+        'crud': 'view',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CHECKLIST') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/checklist_view.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CHECKLIST')
+def checklist_detail(request, _id, _task):
+    room = Room.objects.get(room_id=_id)
+    task = Task.objects.get(task_id=_task)
+    checklist = Checklist.objects.get(
+        task_id=_task, checklist_date=datetime.date.today())
+
+    if request.POST:
+        checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'
+        checklist.checklist_note = request.POST.get('checklist_remark')
+        if checklist.checklist_status == 'Belum Dikerjakan':
+            checklist.checklist_start = datetime.datetime.now()
+        else:
+            checklist.checklist_end = datetime.datetime.now()
+        checklist.save()
+
+        return HttpResponseRedirect(reverse('checklist-view', args=[_id]))
+
+    context = {
+        'room': room,
+        'task': task,
+        'data': checklist,
+        'segment': 'checklist',
+        'group_segment': 'job',
+        'crud': 'detail',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CHECKLIST') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/checklist_detail.html', context)
 
 
 @login_required(login_url='/login/')

@@ -1,0 +1,84 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} View Checklist {% endblock title %}
+
+{% block content %}
+
+{% load user_agents %}
+
+<div class="container-fluid mt-0">
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <form action="{% url 'checklist-detail' room.room_id data.task_id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-8 d-flex align-items-center">
+                                <h4 class="mb-2">Ruangan: {{ room.room_name }}</h4>
+                            </div>
+                            <div class="col-4 text-end">
+                                {% if request|is_mobile %}
+                                <div class="dropdown float-lg-end pe-2">
+                                    <a class="cursor-pointer text-body" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5 z-index-3" aria-labelledby="dropdownTable">
+                                        <li><a class="dropdown-item border-radius-md" href="{% url 'checklist-view' room.room_id %}">Kembali</a></li>
+                                    </ul>
+                                </div>
+                                {% else %}
+                                <a href="{% url 'checklist-view' room.room_id %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Kembali</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="pl-lg-0">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="shadow-none">
+                                        <h6 class="heading-small text-muted">Tugas: <span class="text-dark">{{ data.task.task_name }}</span></h6>
+                                        {% if data.checklist_status == 'Selesai' %}
+                                        <span class="badge rounded-pill badge-notification bg-gradient-primary text-white">{{ data.checklist_status }}</span>
+                                        {% elif data.checklist_status == 'Belum Dikerjakan' %}
+                                        <span class="badge rounded-pill badge-notification bg-gradient-dark text-white">{{ data.checklist_status }}</span>
+                                        {% else %}
+                                        <span class="badge rounded-pill badge-notification bg-warning text-dark">{{ data.checklist_status }}</span>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="shadow-none">
+                                        <label class="form-control-label mt-4" for="input-checklist-remark">Catatan</label>
+                                        <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if data.checklist_status != 'Selesai' %}
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    {% if data.checklist_status == 'Belum Dikerjakan' %}
+                                    <button type="submit" class="btn bg-gradient-primary mb-0"><i class="fas fa-clock"></i>&nbsp;&nbsp;Mulai Tugas</button>
+                                    {% elif data.checklist_status == 'Sedang Dikerjakan' %}
+                                    <button type="submit" class="btn bg-gradient-danger mb-0"><i class="fas fa-ban"></i>&nbsp;&nbsp;Tugas Selesai</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+{% endblock javascripts %}

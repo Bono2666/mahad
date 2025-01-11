@@ -56,6 +56,62 @@ class Room(models.Model):
         return self.room_name
 
 
+class Task(models.Model):
+    task_id = models.BigAutoField(primary_key=True)
+    task_name = models.CharField(max_length=50)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    entry_date = models.DateTimeField(null=True)
+    entry_by = models.CharField(max_length=50, null=True)
+    update_date = models.DateTimeField(null=True)
+    update_by = models.CharField(max_length=50, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.entry_date:
+            self.entry_date = timezone.now()
+            self.entry_by = get_current_user().user_id
+        self.update_date = timezone.now()
+        self.update_by = get_current_user().user_id
+        super(Task, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.task_name
+
+
+class Checklist(models.Model):
+    checklist_id = models.BigAutoField(primary_key=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    checklist_status = models.CharField(
+        max_length=20, default='Belum Dikerjakan')
+    checklist_remark = models.CharField(max_length=200, null=True)
+    checklist_start = models.DateTimeField(null=True)
+    checklist_end = models.DateTimeField(null=True)
+    checklist_date = models.DateTimeField(null=True)
+    checklist_duration = models.IntegerField(default=0)
+    checklist_by = models.CharField(max_length=50, null=True)
+    entry_date = models.DateTimeField(null=True)
+    entry_by = models.CharField(max_length=50, null=True)
+    update_date = models.DateTimeField(null=True)
+    update_by = models.CharField(max_length=50, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.checklist_date:
+            self.checklist_date = timezone.now()
+        if self.checklist_start:
+            self.checklist_by = get_current_user().user_id
+        if self.checklist_start and self.checklist_end:
+            self.checklist_duration = (
+                self.checklist_end - self.checklist_start).minutes
+        if not self.entry_date:
+            self.entry_date = timezone.now()
+            self.entry_by = get_current_user().user_id
+        self.update_date = timezone.now()
+        self.update_by = get_current_user().user_id
+        super(Checklist, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.checklist_name
+
+
 class Distributor(models.Model):
     distributor_id = models.CharField(max_length=50, primary_key=True)
     distributor_name = models.CharField(max_length=50)

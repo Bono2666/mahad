@@ -90,7 +90,7 @@
                                     <form method="post" action="{% url 'room-view' data.room_id %}" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <div class="modal-body border-bottom-0">
-                                            
+                                            <input type="text" class="form-control-sm" name="task_name" placeholder="Tugas" required>
                                         </div>
                                         <div class="modal-footer border-0">
                                             <button type="button" class="btn btn-sm bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
@@ -107,39 +107,24 @@
                                     <thead>
                                         <tr>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                                Nama Menu</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                                Tambah</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                                Ubah</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                                Hapus</th>
+                                                Tugas</th>
                                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in auth %}
-                                        <tr {% if crud == 'view' %}class="cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirm-{{ item.menu_id }}"{% endif %}>
+                                        {% for item in tasks %}
+                                        <tr {% if crud == 'view' %}class="cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirm-{{ item.task_id }}"{% endif %}>
                                             <td>
                                                 <div class="d-flex pe-2 py-0">
                                                     <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ item.menu }}</h6>
+                                                        <h6 class="mb-0 text-sm">{{ item.task_name }}</h6>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.add }}" {% if item.add %}checked{% endif %}/>                   
+                                                <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.task_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle"></i></button>
                                             </td>
-                                            <td>
-                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.edit }}" {% if item.edit %}checked{% endif %}/>
-                                            </td>
-                                            <td>
-                                                <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.delete }}" {% if item.delete %}checked{% endif %}/>
-                                            </td>
-                                            <td>
-                                                <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.menu_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle"></i></button>
-                                            </td>
-                                            <div class="modal fade" id="delete-{{ item.menu_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                            <div class="modal fade" id="delete-{{ item.task_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                                 aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                                     <div class="modal-content">
@@ -147,47 +132,31 @@
                                                             <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
                                                         </div>
                                                         <div class="modal-body border-bottom-0">
-                                                            Anda yakin akan menghapus menu <strong>{{ item.menu }}</strong>?
+                                                            Anda yakin akan menghapus tugas <strong>{{ item.task_name }}</strong>?
                                                         </div>
                                                         <div class="modal-footer border-0">
                                                             <button role="button" class="btn bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
-                                                            <a href="{% url 'auth-delete' item.user_id item.menu_id %}" role="button" class="btn bg-gradient-primary text-white">Hapus
+                                                            <a href="{% url 'task-delete' item.task_id %}" role="button" class="btn bg-gradient-primary text-white">Hapus
                                                             </a>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </tr>
-                                        <div class="modal fade" id="confirm-{{ item.menu_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        <div class="modal fade" id="confirm-{{ item.task_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                             aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="ModalLabel">Menu: {{ item.menu }}</h5>
+                                                        <h5 class="modal-title" id="ModalLabel">Tugas: {{ item.task_name }}</h5>
                                                     </div>
-                                                    <form method="post" action="{% url 'auth-update' item.user_id item.menu_id %}" enctype="multipart/form-data">
+                                                    <form method="post" action="{% url 'task-update' item.task_id %}" enctype="multipart/form-data">
                                                         {% csrf_token %}
                                                         <div class="modal-body border-bottom-0">
                                                             <div class="pl-lg-0">
                                                                 <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <div class="form-group shadow-none">
-                                                                            <input type="checkbox" class="border mt-1" name="add" value="{{ item.add }}" {% if item.add %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Tambah</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <div class="form-group shadow-none">
-                                                                            <input type="checkbox" class="border mt-1" name="edit" value="{{ item.edit }}" {% if item.edit %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Ubah</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-3">
-                                                                        <div class="form-group shadow-none">
-                                                                            <input type="checkbox" class="border mt-1" name="delete" value="{{ item.delete }}" {% if item.delete %}checked{% endif %}/>&nbsp;&nbsp;<label class="form-control-label">Hapus</label>
-                                                                        </div>
+                                                                    <div class="modal-body border-bottom-0">
+                                                                        <input type="text" class="form-control-sm" name="task_name" value="{{ item.task_name }}" required>
                                                                     </div>
                                                                 </div>
                                                             </div>

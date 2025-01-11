@@ -147,9 +147,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'apps/media/')
 AUTH_USER_MODEL = 'apps.User'
 
 AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(minutes=15),
+    'IDLE_TIME': timedelta(hours=2),
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
-    'MESSAGE': 'The session has expired. Please login again to continue.',
+    'MESSAGE': 'Sesi telah berakhir. Silakan masuk lagi untuk melanjutkan.',
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
