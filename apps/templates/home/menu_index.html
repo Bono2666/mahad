@@ -4,6 +4,8 @@
 
 {% block content %}
 
+{% load user_agents %}
+
 <!-- Page content -->
 <div class="container-fluid py-0">
     <div class="row">
@@ -14,7 +16,11 @@
                         <h4 class="mb-2">Data Menu</h4>
                     </div>
                     <div class="col-6 text-end">
+                        {% if request|is_mobile %}
+                        <a class="btn btn-sm bg-gradient-primary mb-0 rounded-circle px-2 py-2" {% if not btn.add and not request.user.is_superuser %}hidden{% endif %} href="{% url 'menu-add' %}">&nbsp;<i class="fas fa-plus text-md"></i>&nbsp;</a>
+                        {% else %}
                         <a class="btn btn-sm bg-gradient-primary mb-0 {% if not btn.add and not request.user.is_superuser %}disabled{% endif %}" href="{% url 'menu-add' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Buat Menu Baru</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">

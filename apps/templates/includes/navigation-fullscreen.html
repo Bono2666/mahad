@@ -4,9 +4,13 @@
     <div class="container-fluid pe-0">
       <a class="navbar-brand font-weight-bolder ms-lg-0 {% if request|is_mobile %}col-10 py-1{% else %}ms-3{% endif %}" href="/">
         <img src="https://aqiqahon.sahabataqiqah.co.id/apps/static/img/brand/favicon2.png" class="navbar-brand-img w-15 py-3" alt="main_logo">
+        {% if request|is_mobile %}
+        <span class="ms-3">Marbot | Al Ukhuwah BSD</span>
+        {% else %}
         <span class="ms-4">Marbot | Masjid Al Ukhuwah BSD</span>
+        {% endif %}
       </a>
-      <button class="navbar-toggler shadow-none ms-7 {% if request|is_mobile %}col-2 pe-3 text-end{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler shadow-none {% if request|is_mobile %}col-2 pe-3 text-end{% else %}ms-7{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon mt-2">
             <span class="navbar-toggler-bar bar1"></span>
             <span class="navbar-toggler-bar bar2"></span>

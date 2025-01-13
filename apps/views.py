@@ -938,7 +938,7 @@ def room_add(request):
         form = FormRoom(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('room-index'))
+            return HttpResponseRedirect(reverse('room-view', args=[form.instance.room_id, ]))
         else:
             message = form.errors
             context = {
@@ -995,6 +995,8 @@ def room_view(request, _id):
 @role_required(allowed_roles='ROOM')
 def room_update(request, _id):
     rooms = Room.objects.get(room_id=_id)
+    tasks = Task.objects.filter(room_id=_id)
+
     if request.POST:
         form = FormRoomUpdate(
             request.POST, request.FILES, instance=rooms)
@@ -1008,6 +1010,7 @@ def room_update(request, _id):
     context = {
         'form': form,
         'data': rooms,
+        'tasks': tasks,
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'update',
@@ -3552,18 +3555,19 @@ def checklist_view(request, _id):
     room = Room.objects.get(room_id=_id)
     tasks = Task.objects.filter(room_id=_id)
     checklist = Checklist.objects.filter(checklist_date=datetime.date.today(
-    )) if Checklist.objects.filter(checklist_date=datetime.date.today()) else None
+    ), room_id=_id) if Checklist.objects.filter(checklist_date=datetime.date.today(), room_id=_id) else None
 
     if not checklist:
         for task in tasks:
             new_checklist = Checklist(
+                room_id=_id,
                 task=task,
                 checklist_date=datetime.date.today(),
             )
             new_checklist.save()
 
     today_checklist = Checklist.objects.filter(
-        checklist_date=datetime.date.today())
+        checklist_date=datetime.date.today(), room_id=_id)
 
     context = {
         'room': room,
@@ -3589,13 +3593,29 @@ def checklist_detail(request, _id, _task):
     if request.POST:
         checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'
         checklist.checklist_note = request.POST.get('checklist_remark')
-        if checklist.checklist_status == 'Belum Dikerjakan':
+        if checklist.checklist_status == 'Sedang Dikerjakan':
             checklist.checklist_start = datetime.datetime.now()
         else:
             checklist.checklist_end = datetime.datetime.now()
+            # get delta between start and end
+            delta = checklist.checklist_end - checklist.checklist_start
+            checklist.checklist_duration = delta.total_seconds() / 60
+        if request.FILES.get('checklist_attachment'):
+            checklist.checklist_attachment = request.FILES.get(
+                'checklist_attachment')
         checklist.save()
 
-        return HttpResponseRedirect(reverse('checklist-view', args=[_id]))
+        if not settings.DEBUG and request.FILES.get('checklist_attachment'):
+            my_file = checklist.checklist_attachment
+            filename = '../../www/marbot/apps/media/' + my_file.name
+            with open(filename, 'wb+') as temp_file:
+                for chunk in my_file.chunks():
+                    temp_file.write(chunk)
+
+        if checklist.checklist_status == 'Selesai':
+            return HttpResponseRedirect(reverse('checklist-view', args=[_id]))
+        else:
+            return HttpResponseRedirect(reverse('checklist-detail', args=[_id, _task]))
 
     context = {
         'room': room,
@@ -3609,6 +3629,16 @@ def checklist_detail(request, _id, _task):
     }
 
     return render(request, 'home/checklist_detail.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CHECKLIST')
+def remove_attachment(request, _id):
+    checklist = Checklist.objects.get(checklist_id=_id)
+    checklist.checklist_attachment = None
+    checklist.save()
+
+    return HttpResponseRedirect(reverse('checklist-detail', args=[_id, checklist.task_id]))
 
 
 @login_required(login_url='/login/')

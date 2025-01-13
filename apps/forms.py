@@ -51,6 +51,7 @@ class FormUserView(ModelForm):
             {'class': 'form-control-sm', 'readonly': 'readonly'})
         self.fields['email'].widget = forms.EmailInput(
             {'class': 'form-control-sm', 'readonly': 'readonly'})
+        self.fields['signature'].label = 'Tanda Tangan'
 
     class Meta:
         model = User
@@ -73,6 +74,7 @@ class FormUserUpdate(ModelForm):
             {'class': 'form-control-sm'})
         self.fields['email'].widget = forms.EmailInput(
             {'class': 'form-control-sm'})
+        self.fields['signature'].label = 'Tanda Tangan'
         self.fields['signature'].required = False
 
     class Meta:

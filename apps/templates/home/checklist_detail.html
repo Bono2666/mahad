@@ -19,14 +19,7 @@
                             </div>
                             <div class="col-4 text-end">
                                 {% if request|is_mobile %}
-                                <div class="dropdown float-lg-end pe-2">
-                                    <a class="cursor-pointer text-body" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </a>
-                                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5 z-index-3" aria-labelledby="dropdownTable">
-                                        <li><a class="dropdown-item border-radius-md" href="{% url 'checklist-view' room.room_id %}">Kembali</a></li>
-                                    </ul>
-                                </div>
+                                <a class="btn btn-sm bg-gradient-dark mb-0 rounded-circle px-2 py-2" href="{% url 'checklist-view' room.room_id %}">&nbsp;<i class="fas fa-reply text-md"></i>&nbsp;</a>
                                 {% else %}
                                 <a href="{% url 'checklist-view' room.room_id %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Kembali</a>
                                 {% endif %}
@@ -46,7 +39,6 @@
                                         {% else %}
                                         <span class="badge rounded-pill badge-notification bg-warning text-dark">{{ data.checklist_status }}</span>
                                         {% endif %}
-
                                     </div>
                                 </div>
                             </div>
@@ -55,6 +47,43 @@
                                     <div class="shadow-none">
                                         <label class="form-control-label mt-4" for="input-checklist-remark">Catatan</label>
                                         <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="shadow-none">
+                                        <label class="form-control-label" for="input-checklist-image">Foto</label>
+                                    </div>
+                                    <div class="input-group input-group-alternative">
+                                        <a {% if data.checklist_attachment %}href="{{ data.checklist_attachment.url }}"{% endif %} target="_blank" class="form-control form-control-sm border">{% if data.checklist_attachment %}{{ data.checklist_attachment }}{% else %}Tidak ada foto untuk tugas ini{% endif %}</a>
+                                        <span class="input-group-text bg-transparent end-0 pe-3 py-2 {% if crud == 'update' %}cursor-pointer{% endif %} text-body z-index-0" data-bs-toggle="modal" {% if crud == 'update' %}data-bs-target="#delete-image"{% endif %}><i class="fas fa-times-circle"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    {% if not request|is_mobile %}
+                                    <div class="shadow-none">
+                                        <label class="pb-3"></label>
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" name="checklist_attachment" id="input-checklist-attachment" class="form-control form-control-sm border border-radius-sm" accept="image/*" {% if data.checklist_status == 'Selesai' %}disabled{% endif %}>
+                                </div>
+                                <div class="modal fade" id="delete-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
+                                            </div>
+                                            <div class="modal-body border-bottom-0">
+                                                Anda yakin akan menghapus foto ini?
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <button role="button" class="btn bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
+                                                <a href="{% url 'remove-attachment' data.checklist_id %}" role="button" class="btn bg-gradient-primary text-white">Hapus
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

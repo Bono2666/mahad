@@ -193,6 +193,8 @@ urlpatterns = [
     path('checklist/view/<str:_id>/', views.checklist_view, name='checklist-view'),
     path('checklist/detail/<str:_id>/<str:_task>/',
          views.checklist_detail, name='checklist-detail'),
+    path('checklist/remove-attachment/<str:_id>/',
+         views.remove_attachment, name='remove-attachment'),
     path('order/', views.order_index, name='order-index'),
     path('order/cancel/<path:_id>/', views.order_cancel, name='order-cancel'),
     path('order/confirmed/<path:_id>/',

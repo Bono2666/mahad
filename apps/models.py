@@ -79,15 +79,18 @@ class Task(models.Model):
 
 class Checklist(models.Model):
     checklist_id = models.BigAutoField(primary_key=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     checklist_status = models.CharField(
         max_length=20, default='Belum Dikerjakan')
     checklist_remark = models.CharField(max_length=200, null=True)
+    checklist_attachment = models.ImageField(upload_to='checklist/', null=True)
     checklist_start = models.DateTimeField(null=True)
     checklist_end = models.DateTimeField(null=True)
     checklist_date = models.DateTimeField(null=True)
     checklist_duration = models.IntegerField(default=0)
-    checklist_by = models.CharField(max_length=50, null=True)
+    checklist_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(null=True)
@@ -97,10 +100,7 @@ class Checklist(models.Model):
         if not self.checklist_date:
             self.checklist_date = timezone.now()
         if self.checklist_start:
-            self.checklist_by = get_current_user().user_id
-        if self.checklist_start and self.checklist_end:
-            self.checklist_duration = (
-                self.checklist_end - self.checklist_start).minutes
+            self.checklist_by = get_current_user()
         if not self.entry_date:
             self.entry_date = timezone.now()
             self.entry_by = get_current_user().user_id
