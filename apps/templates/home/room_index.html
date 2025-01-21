@@ -31,6 +31,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID Ruangan
                                     </th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Ruangan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Petugas</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,6 +46,9 @@
                                     </td>
                                     <td>
                                         <h6 class="mb-0 text-sm">{{ item.room_name }}</h6>                   
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">{% if item.janitor %}{{ item.janitor }}{% endif %}</h6>
                                     </td>
                                 </tr>
                                 {% endfor %}

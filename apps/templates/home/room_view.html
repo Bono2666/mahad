@@ -68,6 +68,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="shadow-none">
+                                        {{ form.janitor.label_tag }}
+                                        <select name="janitor" class="form-control form-select-sm" required {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %} {% if crud == 'view' %}disabled{% endif %}>
+                                            <option value="">-- Pilih Petugas --</option>
+                                            {% for item in janitor %}
+                                            <option value="{{ item.user_id }}" {% if item.user_id == data.janitor_id %}selected{% endif %}>{{ item.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="text-sm text-danger">
+                                            {{ form.janitor.errors }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

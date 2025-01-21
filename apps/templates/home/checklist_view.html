@@ -94,21 +94,40 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready( function () {
-        $('#taskTable').DataTable({
-            'pageLength': 10,
-            'lengthMenu': [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'All']],
-            'language': {
-                'search': 'Cari: ',
-                'info': 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                'lengthMenu': 'Tampilkan _MENU_ data',
-                'infoEmpty': '',
-                'zeroRecords': 'Tidak ada data',
-                'paginate': {
-                    'next': 'Selanjutnya',
-                    'previous': 'Sebelumnya'
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            $('#taskTable').DataTable({
+                'scrollX': true,
+                'pageLength': 10,
+                'lengthMenu': [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'All']],
+                'language': {
+                    'search': 'Cari: ',
+                    'info': 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'lengthMenu': 'Tampilkan _MENU_ data',
+                    'infoEmpty': '',
+                    'zeroRecords': 'Tidak ada data',
+                    'paginate': {
+                        'next': 'Selanjutnya',
+                        'previous': 'Sebelumnya'
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            new DataTable('#taskTable', {
+                'pageLength': 10,
+                'lengthMenu': [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'All']],
+                'language': {
+                    'search': 'Cari: ',
+                    'info': 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'lengthMenu': 'Tampilkan _MENU_ data',
+                    'infoEmpty': '',
+                    'zeroRecords': 'Tidak ada data',
+                    'paginate': {
+                        'next': 'Selanjutnya',
+                        'previous': 'Sebelumnya'
+                    }
+                }
+            });
+        }
 
         let btn = document.getElementsByClassName('paginate_button');
         for (const button of btn) {

@@ -195,6 +195,8 @@ urlpatterns = [
          views.checklist_detail, name='checklist-detail'),
     path('checklist/remove-attachment/<str:_id>/',
          views.remove_attachment, name='remove-attachment'),
+    path('report/marbot/<str:_from_date>/<str:_to_date>/<str:_room>/',
+         views.report_marbot, name='report-marbot'),
     path('order/', views.order_index, name='order-index'),
     path('order/cancel/<path:_id>/', views.order_cancel, name='order-cancel'),
     path('order/confirmed/<path:_id>/',

@@ -32,6 +32,7 @@ from django.utils.text import Truncator
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from crum import get_current_user
+from apps.notifications import *
 
 
 @login_required(login_url='/login/')
@@ -934,6 +935,8 @@ def room_index(request):
 @login_required(login_url='/login/')
 @role_required(allowed_roles='ROOM')
 def room_add(request):
+    janitor = User.objects.filter(position_id='MRB')
+
     if request.POST:
         form = FormRoom(request.POST, request.FILES)
         if form.is_valid():
@@ -942,6 +945,7 @@ def room_add(request):
         else:
             message = form.errors
             context = {
+                'janitor': janitor,
                 'form': form,
                 'segment': 'room',
                 'group_segment': 'master',
@@ -954,6 +958,7 @@ def room_add(request):
     else:
         form = FormRoom()
         context = {
+            'janitor': janitor,
             'form': form,
             'segment': 'room',
             'group_segment': 'master',
@@ -970,6 +975,7 @@ def room_view(request, _id):
     rooms = Room.objects.get(room_id=_id)
     form = FormRoomView(instance=rooms)
     tasks = Task.objects.filter(room_id=_id)
+    janitor = User.objects.filter(position_id='MRB')
 
     if request.POST:
         task = Task(room_id=_id, task_name=request.POST.get('task_name'))
@@ -981,6 +987,7 @@ def room_view(request, _id):
         'form': form,
         'data': rooms,
         'tasks': tasks,
+        'janitor': janitor,
         'tab': 'task',
         'segment': 'room',
         'group_segment': 'master',
@@ -996,6 +1003,7 @@ def room_view(request, _id):
 def room_update(request, _id):
     rooms = Room.objects.get(room_id=_id)
     tasks = Task.objects.filter(room_id=_id)
+    janitor = User.objects.filter(position_id='MRB')
 
     if request.POST:
         form = FormRoomUpdate(
@@ -1011,6 +1019,7 @@ def room_update(request, _id):
         'form': form,
         'data': rooms,
         'tasks': tasks,
+        'janitor': janitor,
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'update',
@@ -1067,6 +1076,40 @@ def equipment_index(request):
     }
 
     return render(request, 'home/equipment_index.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='REPORT')
+def report_marbot(request, _from_date, _to_date, _room):
+    from_date = datetime.datetime.strptime(
+        _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
+    to_date = datetime.datetime.strptime(
+        _to_date, '%Y-%m-%d').date() if _to_date != '0' else datetime.date.today()
+    rooms = Room.objects.all()
+
+    if _room == 'all':
+        checklists = Checklist.objects.filter(
+            checklist_date__gte=from_date, checklist_date__lte=to_date)
+    else:
+        checklists = Checklist.objects.filter(
+            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date)
+
+    context = {
+        'data': checklists,
+        'from_date': from_date,
+        'to_date': to_date,
+        'fromDate': _from_date,
+        'toDate': _to_date,
+        'selected_room': _room,
+        'rooms': rooms,
+        'checklist_notif': checklist_notification(request),
+        'segment': 'report_marbot',
+        'group_segment': 'report',
+        'crud': 'index',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='REPORT') if not request.user.is_superuser else Auth.objects.all(),
+    }
+    return render(request, 'home/report_marbot.html', context)
 
 
 @login_required(login_url='/login/')
@@ -3553,14 +3596,14 @@ def checklist_index(request):
 @role_required(allowed_roles='CHECKLIST')
 def checklist_view(request, _id):
     room = Room.objects.get(room_id=_id)
-    tasks = Task.objects.filter(room_id=_id)
+    all_tasks = Task.objects.all()
     checklist = Checklist.objects.filter(checklist_date=datetime.date.today(
     ), room_id=_id) if Checklist.objects.filter(checklist_date=datetime.date.today(), room_id=_id) else None
 
     if not checklist:
-        for task in tasks:
+        for task in all_tasks:
             new_checklist = Checklist(
-                room_id=_id,
+                room_id=task.room_id,
                 task=task,
                 checklist_date=datetime.date.today(),
             )
@@ -3592,7 +3635,7 @@ def checklist_detail(request, _id, _task):
 
     if request.POST:
         checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'
-        checklist.checklist_note = request.POST.get('checklist_remark')
+        checklist.checklist_remark = request.POST.get('checklist_remark')
         if checklist.checklist_status == 'Sedang Dikerjakan':
             checklist.checklist_start = datetime.datetime.now()
         else:

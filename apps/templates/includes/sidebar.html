@@ -107,9 +107,9 @@
 
         <div class="multi-level ms-5 collapse {% if 'report' in group_segment %}show{% endif %}" role="list" id="report-menu" aria-expanded="{% if 'report' in group_segment %}true{% else %}false{% endif %}">
           <ul class="flex-column nav">
-            <li class="nav-item {% if segment == 'cash-in' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CASH-IN' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'cashin-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CASH-IN' not in role and not request.user.is_superuser %}disabled{% endif %}">Uang Masuk</span>
+            <li class="nav-item {% if segment == 'report_marbot' %}active{% endif %} list-unstyled">
+              <a class="nav-link button cursor-pointer {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '0' '0' 'all' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pekerjaan</span>
               </a>
             </li>
           </ul>

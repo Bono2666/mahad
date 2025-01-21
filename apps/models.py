@@ -38,6 +38,7 @@ class User(AbstractUser):
 class Room(models.Model):
     room_id = models.CharField(max_length=50, primary_key=True)
     room_name = models.CharField(max_length=50)
+    janitor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(null=True)

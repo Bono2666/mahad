@@ -446,10 +446,9 @@ class FormRoom(ModelForm):
         self.label_suffix = ''
         self.fields['room_id'].label = 'ID Ruangan'
         self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['janitor'].label = 'Petugas'
         self.fields['room_id'].widget = forms.TextInput(
             {'class': 'form-control-sm text-uppercase'})
-        self.fields['room_name'].widget = forms.TextInput(
-            {'class': 'form-control-sm'})
 
     class Meta:
         model = Room
@@ -461,6 +460,7 @@ class FormRoomUpdate(ModelForm):
         super(FormRoomUpdate, self).__init__(*args, **kwargs)
         self.label_suffix = ''
         self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['janitor'].label = 'Petugas'
         self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
 
@@ -475,12 +475,13 @@ class FormRoomView(ModelForm):
         super(FormRoomView, self).__init__(*args, **kwargs)
         self.label_suffix = ''
         self.fields['room_name'].label = 'Nama Ruangan'
+        self.fields['janitor'].label = 'Petugas'
         self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm', 'readonly': 'readonly'})
 
     class Meta:
         model = Room
-        fields = ['room_id', 'room_name']
+        fields = ['room_id', 'room_name', 'janitor']
 
 
 class FormEquipment(ModelForm):
