@@ -1113,6 +1113,98 @@ def report_marbot(request, _from_date, _to_date, _room):
 
 
 @login_required(login_url='/login/')
+@role_required(allowed_roles='REPORT')
+def report_marbot_toxl(request, _from_date, _to_date, _room):
+    from_date = datetime.datetime.strptime(
+        _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
+    to_date = datetime.datetime.strptime(
+        _to_date, '%Y-%m-%d').date() if _to_date != '0' else datetime.date.today()
+
+    if _room == 'all':
+        checklists = Checklist.objects.filter(
+            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'room__janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
+    else:
+        checklists = Checklist.objects.filter(
+            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date)
+
+    # Create a HttpResponse object with the csv data
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = 'laporan_marbot_' + \
+        _from_date + '_' + '_to_' + _to_date + '_' + \
+        '_room_' + _room + '.xlsx'
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    # Create an XlsxWriter workbook object and add a worksheet.
+    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    worksheet = workbook.add_worksheet()
+
+    # Define column headers
+    headers = ['Ruangan', 'Tanggal', 'Tugas', 'Petugas',
+               'Status', 'Durasi', 'Dikerjakan Oleh', 'Catatan', 'Foto']
+
+    # Define cell formats
+    header_format = workbook.add_format({
+        'bold': True,
+        'bg_color': '#035a21',
+        'font_color': 'white',
+        'border': 1,
+        'align': 'center',
+    })
+    cell_format = workbook.add_format({'border': 1})
+    date_format = workbook.add_format(
+        {'border': 1, 'num_format': 'dd-mmm-yyyy', 'align': 'left'})
+    date_back_format = workbook.add_format(
+        {'border': 1, 'num_format': 'dd-mmm-yyyy', 'bg_color': '#a5d223', 'align': 'left'})
+    num_format = workbook.add_format({'border': 1, 'num_format': '#,##0'})
+    num_back_format = workbook.add_format(
+        {'border': 1, 'num_format': '#,##0', 'bg_color': '#a5d223'})
+    process_format = workbook.add_format({'border': 1, 'bg_color': '#fbcf33'})
+    back_format = workbook.add_format({'border': 1, 'bg_color': '#a5d223'})
+
+    # Set column width
+    worksheet.set_column('A:A', 25)
+    worksheet.set_column('B:B', 12)
+    worksheet.set_column('C:C', 25)
+    worksheet.set_column('D:D', 12)
+    worksheet.set_column('E:E', 16)
+    worksheet.set_column('F:F', 12)
+    worksheet.set_column('G:G', 15)
+    worksheet.set_column('H:I', 25)
+
+    # Write data to XlsxWriter Object
+    for idx, record in enumerate(checklists):
+        for col_idx, col_value in enumerate(record):
+            if idx == 0:
+                # Write the column headers on the first row
+                worksheet.write(idx, col_idx, headers[col_idx], header_format)
+            # Write the data rows
+            if col_idx == 1:
+                worksheet.write(idx + 1, col_idx, col_value, date_format)
+            elif col_idx == 4:
+                if col_value == 'Selesai':
+                    worksheet.write(idx + 1, col_idx, col_value, back_format)
+                elif col_value == 'Sedang Dikerjakan':
+                    worksheet.write(idx + 1, col_idx,
+                                    col_value, process_format)
+                else:
+                    worksheet.write(idx + 1, col_idx, col_value, cell_format)
+            elif col_idx == 5:
+                if record[4] == 'Selesai':
+                    worksheet.write(idx + 1, col_idx,
+                                    str(col_value) + ' menit', back_format)
+                else:
+                    worksheet.write(idx + 1, col_idx, '', cell_format)
+            else:
+                worksheet.write(idx + 1, col_idx, col_value, cell_format)
+
+    # Close the workbook before sending the data.
+    workbook.close()
+
+    return response
+
+
+@login_required(login_url='/login/')
 @role_required(allowed_roles='EQUIPMENT')
 def equipment_add(request):
     if request.POST:
@@ -3630,8 +3722,8 @@ def checklist_view(request, _id):
 def checklist_detail(request, _id, _task):
     room = Room.objects.get(room_id=_id)
     task = Task.objects.get(task_id=_task)
-    checklist = Checklist.objects.get(
-        task_id=_task, checklist_date=datetime.date.today())
+    checklist = Checklist.objects.get(room_id=_id,
+                                      task_id=_task, checklist_date=datetime.date.today())
 
     if request.POST:
         checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'

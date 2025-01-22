@@ -46,7 +46,7 @@
                                 <div class="col-md-6">
                                     <div class="shadow-none">
                                         <label class="form-control-label mt-4" for="input-checklist-remark">Catatan</label>
-                                        <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
+                                        <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %} {% if not btn.edit %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@
                                         <label class="pb-3"></label>
                                     </div>
                                     {% endif %}
-                                    <input type="file" name="checklist_attachment" id="input-checklist-attachment" class="form-control form-control-sm border border-radius-sm" accept="image/*" {% if data.checklist_status == 'Selesai' %}disabled{% endif %}>
+                                    <input type="file" name="checklist_attachment" id="input-checklist-attachment" class="form-control form-control-sm border border-radius-sm" accept="image/*" {% if data.checklist_status == 'Selesai' %}disabled{% endif %} {% if not btn.edit %}disabled{% endif %}>
                                 </div>
                                 <div class="modal fade" id="delete-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if data.checklist_status != 'Selesai' %}
+                            {% if data.checklist_status != 'Selesai' and btn.edit %}
                             <div class="row mt-4">
                                 <div class="col-12">
                                     {% if data.checklist_status == 'Belum Dikerjakan' %}

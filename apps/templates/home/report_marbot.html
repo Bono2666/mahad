@@ -194,7 +194,7 @@
     });
 
     exportBtn.addEventListener('click', function() {
-        let url = `/report/claim/export/${from_yr.value}/${from_mo.value}/${to_yr.value}/${to_mo.value}/${distributor.value}`;
+        let url = `/report/marbot/export/${from_dt.value}/${to_dt.value}/${room.value}`;
         window.location.href = url;
     });
 
