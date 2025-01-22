@@ -62,14 +62,14 @@
             </svg>
             {% endif %}
           </div>
-          <span class="nav-link-text ms-1">Pekerjaan</span>
+          <span class="nav-link-text ms-1">Pekerjaan{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
         </a>
 
         <div class="multi-level ms-5 collapse {% if 'job' in group_segment %}show{% endif %}" role="list" id="job-menu" aria-expanded="{% if 'job' in group_segment %}true{% else %}false{% endif %}">
           <ul class="flex-column nav">
             <li class="nav-item {% if segment == 'checklist' %}active{% endif %} list-unstyled">
               <a class="nav-link button cursor-pointer {% if 'CHECKLIST' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'checklist-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CHECKLIST' not in role and not request.user.is_superuser %}disabled{% endif %}">Checklist</span>
+                <span class="nav-link-text ms-1 {% if 'CHECKLIST' not in role and not request.user.is_superuser %}disabled{% endif %}">Checklist{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill badge-notification ms-2">{{ checklist_notif }}</span>{% endif %}</span>
               </a>
             </li>
           </ul>

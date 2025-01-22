@@ -38,6 +38,7 @@ from apps.notifications import *
 @login_required(login_url='/login/')
 def home(request):
     context = {
+        'checklist_notif': checklist_notification(request),
         'segment': 'index',
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
     }
@@ -54,6 +55,7 @@ def user_index(request):
 
     context = {
         'data': users,
+        'checklist_notif': checklist_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'index',
@@ -86,6 +88,7 @@ def user_add(request):
             context = {
                 'form': form,
                 'position': position,
+                'checklist_notif': checklist_notification(request),
                 'segment': 'user',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -99,6 +102,7 @@ def user_add(request):
         context = {
             'form': form,
             'position': position,
+            'checklist_notif': checklist_notification(request),
             'segment': 'user',
             'group_segment': 'master',
             'crud': 'add',
@@ -149,6 +153,7 @@ def user_view(request, _id):
         'area': area,
         'item_area': item_area,
         'positions': position,
+        'checklist_notif': checklist_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'tab': 'auth',
@@ -286,6 +291,7 @@ def user_update(request, _id):
         'positions': position,
         'auth': auth,
         'area': area,
+        'checklist_notif': checklist_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'update',
@@ -324,6 +330,7 @@ def change_password(request):
         'data': request.user,
         'crud': 'update',
         'message': message,
+        'checklist_notif': checklist_notification(request),
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
     }
     return render(request, 'home/user_change_password.html', context)
@@ -346,6 +353,7 @@ def set_password(request, _id):
     context = {
         'form': form,
         'data': users,
+        'checklist_notif': checklist_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'update',
@@ -604,6 +612,7 @@ def position_add(request):
             message = form.errors
             context = {
                 'form': form,
+                'checklist_notif': checklist_notification(request),
                 'segment': 'position',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -616,6 +625,7 @@ def position_add(request):
         form = FormPosition()
         context = {
             'form': form,
+            'checklist_notif': checklist_notification(request),
             'segment': 'position',
             'group_segment': 'master',
             'crud': 'add',
@@ -634,6 +644,7 @@ def position_index(request):
 
     context = {
         'data': positions,
+        'checklist_notif': checklist_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'index',
@@ -662,6 +673,7 @@ def position_update(request, _id):
     context = {
         'form': form,
         'data': positions,
+        'checklist_notif': checklist_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'update',
@@ -691,6 +703,7 @@ def position_view(request, _id):
     context = {
         'form': form,
         'data': positions,
+        'checklist_notif': checklist_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'view',
@@ -712,6 +725,7 @@ def menu_add(request):
             message = form.errors
             context = {
                 'form': form,
+                'checklist_notif': checklist_notification(request),
                 'segment': 'menu',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -724,6 +738,7 @@ def menu_add(request):
         form = FormMenu()
         context = {
             'form': form,
+            'checklist_notif': checklist_notification(request),
             'segment': 'menu',
             'group_segment': 'master',
             'crud': 'add',
@@ -742,6 +757,7 @@ def menu_index(request):
 
     context = {
         'data': menus,
+        'checklist_notif': checklist_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'index',
@@ -769,6 +785,7 @@ def menu_update(request, _id):
     context = {
         'form': form,
         'data': menus,
+        'checklist_notif': checklist_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'update',
@@ -798,6 +815,7 @@ def menu_view(request, _id):
     context = {
         'form': form,
         'data': menus,
+        'checklist_notif': checklist_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'view',
@@ -922,6 +940,7 @@ def room_index(request):
 
     context = {
         'data': rooms,
+        'checklist_notif': checklist_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'index',
@@ -947,6 +966,7 @@ def room_add(request):
             context = {
                 'janitor': janitor,
                 'form': form,
+                'checklist_notif': checklist_notification(request),
                 'segment': 'room',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -960,6 +980,7 @@ def room_add(request):
         context = {
             'janitor': janitor,
             'form': form,
+            'checklist_notif': checklist_notification(request),
             'segment': 'room',
             'group_segment': 'master',
             'crud': 'add',
@@ -989,6 +1010,7 @@ def room_view(request, _id):
         'tasks': tasks,
         'janitor': janitor,
         'tab': 'task',
+        'checklist_notif': checklist_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'view',
@@ -1020,6 +1042,7 @@ def room_update(request, _id):
         'data': rooms,
         'tasks': tasks,
         'janitor': janitor,
+        'checklist_notif': checklist_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'update',
@@ -3674,6 +3697,7 @@ def checklist_index(request):
 
     context = {
         'data': room,
+        'checklist_notif': checklist_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'index',
@@ -3707,6 +3731,7 @@ def checklist_view(request, _id):
     context = {
         'room': room,
         'data': today_checklist,
+        'checklist_notif': checklist_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'view',
@@ -3756,6 +3781,7 @@ def checklist_detail(request, _id, _task):
         'room': room,
         'task': task,
         'data': checklist,
+        'checklist_notif': checklist_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'detail',

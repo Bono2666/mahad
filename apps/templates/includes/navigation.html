@@ -38,7 +38,12 @@
         {% if request|is_mobile %}
         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
           <a href="javascript:;" class="nav-link text-body p-0 m-0" id="iconNavbarSidenav">
-            <div class="sidenav-toggler-inner">
+            <div class="sidenav-toggler-inner position-relative">
+              {% if checklist_notif > 0 %}
+              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-gradient-danger border border-light rounded-circle z-index-1">
+                <span class="visually-hidden">New alerts</span>
+              </span>
+              {% endif %}
               <i class="sidenav-toggler-line"></i>
               <i class="sidenav-toggler-line"></i>
               <i class="sidenav-toggler-line"></i>
