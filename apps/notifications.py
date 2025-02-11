@@ -6,6 +6,7 @@ def checklist_notification(request):
     all_tasks = Task.objects.all()
     checklist = Checklist.objects.filter(checklist_date=datetime.date.today(
     )) if Checklist.objects.filter(checklist_date=datetime.date.today()) else None
+    day = datetime.date.today().weekday()
 
     if not checklist:
         for task in all_tasks:
@@ -24,7 +25,21 @@ def checklist_notification(request):
                     task=task,
                     checklist_date=datetime.date.today(),
                 )
-            new_checklist.save()
+
+            if day == 0 and task.mon:
+                new_checklist.save()
+            elif day == 1 and task.tue:
+                new_checklist.save()
+            elif day == 2 and task.wed:
+                new_checklist.save()
+            elif day == 3 and task.thu:
+                new_checklist.save()
+            elif day == 4 and task.fri:
+                new_checklist.save()
+            elif day == 5 and task.sat:
+                new_checklist.save()
+            elif day == 6 and task.sun:
+                new_checklist.save()
 
     checklists = Checklist.objects.filter(
         checklist_date=datetime.date.today()).exclude(checklist_status='Selesai')

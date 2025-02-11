@@ -67,11 +67,11 @@
                                     </td>
                                     <td>
                                         {% if item.checklist_status == 'Selesai' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-primary text-white">{{ item.checklist_status }}</span>
+                                        <span class="badge rounded-pill badge-notification bg-gradient-primary text-white status">{{ item.checklist_status }}</span>
                                         {% elif item.checklist_status == 'Belum Dikerjakan' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-dark text-white">{{ item.checklist_status }}</span>
+                                        <span class="badge rounded-pill badge-notification bg-gradient-dark text-white status">{{ item.checklist_status }}</span>
                                         {% else %}
-                                        <span class="badge rounded-pill badge-notification bg-warning text-dark">{{ item.checklist_status }}</span>
+                                        <span class="badge rounded-pill badge-notification bg-warning text-dark status">{{ item.checklist_status }}</span>
                                         {% endif %}
                                     </td>
                                     <td>

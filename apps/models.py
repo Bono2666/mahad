@@ -60,6 +60,13 @@ class Task(models.Model):
     task_id = models.BigAutoField(primary_key=True)
     task_name = models.CharField(max_length=50)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    sun = models.BooleanField(default=False)
+    mon = models.BooleanField(default=False)
+    tue = models.BooleanField(default=False)
+    wed = models.BooleanField(default=False)
+    thu = models.BooleanField(default=False)
+    fri = models.BooleanField(default=False)
+    sat = models.BooleanField(default=False)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(null=True)
@@ -111,7 +118,7 @@ class Checklist(models.Model):
         super(Checklist, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.checklist_name
+        return self.room.room_name
 
 
 class Distributor(models.Model):

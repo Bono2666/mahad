@@ -104,6 +104,34 @@
                                 <div class="modal-body border-bottom-0">
                                     <input type="text" class="form-control-sm" name="task_name" placeholder="Tugas" required>
                                 </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="sun"/>
+                                    <label class="form-control-label">Ahad</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="mon"/>
+                                    <label class="form-control-label">Senin</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="tue"/>
+                                    <label class="form-control-label">Selasa</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="wed"/>
+                                    <label class="form-control-label">Rabu</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="thu"/>
+                                    <label class="form-control-label">Kamis</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="fri"/>
+                                    <label class="form-control-label">Jum'at</label>
+                                </div>
+                                <div class="form-group shadow-none mb-0 mt-1">
+                                    <input type="checkbox" class="cursor-pointer border ms-3" name="sat"/>
+                                    <label class="form-control-label">Sabtu</label>
+                                </div>
                                 <div class="modal-footer border-0">
                                     <button type="button" class="btn btn-sm bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
                                     <button type="submit" class="btn btn-sm bg-gradient-primary text-white">Simpan
@@ -120,6 +148,20 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                         Tugas</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Ahad</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Senin</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Selasa</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Rabu</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Kamis</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Jum'at</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                        Sabtu</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                                 </tr>
                             </thead>
@@ -132,6 +174,27 @@
                                                 <h6 class="mb-0 text-sm">{{ item.task_name }}</h6>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.sun }}" {% if item.sun %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.mon }}" {% if item.mon %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.tue }}" {% if item.tue %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.wed }}" {% if item.wed %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.thu }}" {% if item.thu %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.fri }}" {% if item.fri %}checked{% endif %}/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" class="border mt-1" disabled name="checks[]" value="{{ item.sat }}" {% if item.sat %}checked{% endif %}/>
                                     </td>
                                     <td>
                                         <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.task_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle"></i></button>
@@ -170,6 +233,34 @@
                                                             <div class="modal-body border-bottom-0">
                                                                 <input type="text" class="form-control-sm" name="task_name" value="{{ item.task_name }}" required>
                                                             </div>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="sun" {% if item.sun %}checked{% endif %}/>
+                                                            <label class="form-control-label">Ahad</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="mon" {% if item.mon %}checked{% endif %}/>
+                                                            <label class="form-control-label">Senin</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="tue" {% if item.tue %}checked{% endif %}/>
+                                                            <label class="form-control-label">Selasa</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="wed" {% if item.wed %}checked{% endif %}/>
+                                                            <label class="form-control-label">Rabu</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="thu" {% if item.thu %}checked{% endif %}/>
+                                                            <label class="form-control-label">Kamis</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="fri" {% if item.fri %}checked{% endif %}/>
+                                                            <label class="form-control-label">Jum'at</label>
+                                                        </div>
+                                                        <div class="form-group shadow-none mb-0 mt-1">
+                                                            <input type="checkbox" class="cursor-pointer border ms-1" name="sat" {% if item.sat %}checked{% endif %}/>
+                                                            <label class="form-control-label">Sabtu</label>
                                                         </div>
                                                     </div>
                                                 </div>

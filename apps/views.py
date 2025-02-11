@@ -14,7 +14,7 @@ from django.utils import timezone
 import xlwt
 from django.http import HttpResponse
 import xlsxwriter
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.db.models import Max
 from django.db.models import Min
 from . import host
@@ -38,7 +38,31 @@ from django.db.models import Prefetch
 
 @login_required(login_url='/login/')
 def home(request):
+    rooms = Checklist.objects.filter(
+        checklist_date=datetime.date.today()).values('room__room_name', 'janitor').distinct().annotate(
+            total=Count('room__room_name'), done=(Count('checklist_status', filter=Q(checklist_status='Selesai'))/Count('checklist_status'))*100).order_by('room__room_name')
+    checklists = Checklist.objects.filter(checklist_date=datetime.date.today())
+    not_done = Checklist.objects.filter(
+        checklist_date=datetime.date.today(), checklist_status='Belum Dikerjakan').count()
+    not_done_percentage = not_done / \
+        len(list(checklists)) if len(list(checklists)) > 0 else 0
+    in_progress = Checklist.objects.filter(
+        checklist_date=datetime.date.today(), checklist_status='Sedang Dikerjakan').count()
+    in_progress_percentage = in_progress / \
+        len(list(checklists)) if len(list(checklists)) > 0 else 0
+    done = Checklist.objects.filter(
+        checklist_date=datetime.date.today(), checklist_status='Selesai').count()
+    done_percentage = done / \
+        len(list(checklists)) if len(list(checklists)) > 0 else 0
     context = {
+        'rooms': rooms,
+        'checklist': len(list(checklists)) if checklists else 0,
+        'not_done': not_done,
+        'not_done_percentage': not_done_percentage*100,
+        'in_progress': in_progress,
+        'in_progress_percentage': in_progress_percentage*100,
+        'done': done,
+        'done_percentage': done_percentage*100,
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'index',
@@ -1021,7 +1045,17 @@ def room_view(request, _id):
     janitor = User.objects.filter(position_id='MRB')
 
     if request.POST:
-        task = Task(room_id=_id, task_name=request.POST.get('task_name'))
+        task = Task(
+            room_id=_id,
+            task_name=request.POST.get('task_name'),
+            sun=True if request.POST.get('sun') else False,
+            mon=True if request.POST.get('mon') else False,
+            tue=True if request.POST.get('tue') else False,
+            wed=True if request.POST.get('wed') else False,
+            thu=True if request.POST.get('thu') else False,
+            fri=True if request.POST.get('fri') else False,
+            sat=True if request.POST.get('sat') else False
+        )
         task.save()
 
         return HttpResponseRedirect(reverse('room-view', args=[_id, ]))
@@ -1092,6 +1126,13 @@ def task_update(request, _id):
     tasks = Task.objects.get(task_id=_id)
     if request.POST:
         tasks.task_name = request.POST.get('task_name')
+        tasks.sun = True if request.POST.get('sun') else False
+        tasks.mon = True if request.POST.get('mon') else False
+        tasks.tue = True if request.POST.get('tue') else False
+        tasks.wed = True if request.POST.get('wed') else False
+        tasks.thu = True if request.POST.get('thu') else False
+        tasks.fri = True if request.POST.get('fri') else False
+        tasks.sat = True if request.POST.get('sat') else False
         tasks.save()
 
         return HttpResponseRedirect(reverse('room-view', args=[tasks.room_id, ]))
@@ -1215,10 +1256,10 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
 
     if _room == 'all':
         checklists = Checklist.objects.filter(
-            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'room__janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
+            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
     else:
         checklists = Checklist.objects.filter(
-            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date)
+            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
 
     # Create a HttpResponse object with the csv data
     response = HttpResponse(
@@ -3114,6 +3155,8 @@ def region_index(request):
 
     context = {
         'data': regions,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'region',
         'group_segment': 'master',
         'crud': 'index',
@@ -3143,6 +3186,8 @@ def region_add(request):
     context = {
         'form': form,
         'janitor': janitor,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'region',
         'group_segment': 'master',
         'crud': 'add',
@@ -3187,6 +3232,8 @@ def region_view(request, _id):
         'janitor': janitor,
         'rooms': rooms,
         'detail': details,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'region',
         'group_segment': 'master',
         'crud': 'view',
@@ -3221,6 +3268,8 @@ def region_update(request, _id):
         'data': region,
         'janitor': janitor,
         'detail': detail,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'region',
         'group_segment': 'master',
         'crud': 'update',
