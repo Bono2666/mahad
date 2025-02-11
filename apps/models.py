@@ -38,7 +38,6 @@ class User(AbstractUser):
 class Room(models.Model):
     room_id = models.CharField(max_length=50, primary_key=True)
     room_name = models.CharField(max_length=50)
-    janitor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(null=True)
@@ -82,9 +81,11 @@ class Checklist(models.Model):
     checklist_id = models.BigAutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    janitor = models.CharField(max_length=50, null=True)
     checklist_status = models.CharField(
         max_length=20, default='Belum Dikerjakan')
     checklist_remark = models.CharField(max_length=200, null=True)
+    checklist_urgent = models.BooleanField(default=False)
     checklist_attachment = models.ImageField(upload_to='checklist/', null=True)
     checklist_start = models.DateTimeField(null=True)
     checklist_end = models.DateTimeField(null=True)
@@ -1256,6 +1257,7 @@ class CLRelease(models.Model):
 class Region(models.Model):
     region_id = models.CharField(max_length=50, primary_key=True)
     region_name = models.CharField(max_length=50)
+    janitor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(
@@ -1277,7 +1279,7 @@ class Region(models.Model):
 
 class RegionDetail(models.Model):
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
-    area = models.ForeignKey(AreaSales, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
     update_date = models.DateTimeField(
@@ -1287,7 +1289,7 @@ class RegionDetail(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['region', 'area'], name='unique_region_area')
+                fields=['region', 'room'], name='unique_region_room')
         ]
 
     def save(self, *args, **kwargs):

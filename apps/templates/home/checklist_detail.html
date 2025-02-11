@@ -49,6 +49,12 @@
                                         <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %} {% if not btn.edit %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group shadow-none mb-0 mt-1">
+                                        <input type="checkbox" class="cursor-pointer border mt-5" name="checklist_urgent" {% if data.checklist_urgent %}checked{% endif %}/>
+                                        <label class="form-control-label mt-5">Butuh Perhatian</label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8">

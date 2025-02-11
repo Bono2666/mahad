@@ -33,12 +33,14 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from crum import get_current_user
 from apps.notifications import *
+from django.db.models import Prefetch
 
 
 @login_required(login_url='/login/')
 def home(request):
     context = {
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'index',
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
     }
@@ -56,6 +58,7 @@ def user_index(request):
     context = {
         'data': users,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'index',
@@ -89,6 +92,7 @@ def user_add(request):
                 'form': form,
                 'position': position,
                 'checklist_notif': checklist_notification(request),
+                'urgent_notif': urgent_notification(request),
                 'segment': 'user',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -103,6 +107,7 @@ def user_add(request):
             'form': form,
             'position': position,
             'checklist_notif': checklist_notification(request),
+            'urgent_notif': urgent_notification(request),
             'segment': 'user',
             'group_segment': 'master',
             'crud': 'add',
@@ -154,6 +159,7 @@ def user_view(request, _id):
         'item_area': item_area,
         'positions': position,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'tab': 'auth',
@@ -292,6 +298,7 @@ def user_update(request, _id):
         'auth': auth,
         'area': area,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'update',
@@ -331,6 +338,7 @@ def change_password(request):
         'crud': 'update',
         'message': message,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
     }
     return render(request, 'home/user_change_password.html', context)
@@ -354,6 +362,7 @@ def set_password(request, _id):
         'form': form,
         'data': users,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'user',
         'group_segment': 'master',
         'crud': 'update',
@@ -613,6 +622,7 @@ def position_add(request):
             context = {
                 'form': form,
                 'checklist_notif': checklist_notification(request),
+                'urgent_notif': urgent_notification(request),
                 'segment': 'position',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -626,6 +636,7 @@ def position_add(request):
         context = {
             'form': form,
             'checklist_notif': checklist_notification(request),
+            'urgent_notif': urgent_notification(request),
             'segment': 'position',
             'group_segment': 'master',
             'crud': 'add',
@@ -645,6 +656,7 @@ def position_index(request):
     context = {
         'data': positions,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'index',
@@ -674,6 +686,7 @@ def position_update(request, _id):
         'form': form,
         'data': positions,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'update',
@@ -704,6 +717,7 @@ def position_view(request, _id):
         'form': form,
         'data': positions,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'position',
         'group_segment': 'master',
         'crud': 'view',
@@ -726,6 +740,7 @@ def menu_add(request):
             context = {
                 'form': form,
                 'checklist_notif': checklist_notification(request),
+                'urgent_notif': urgent_notification(request),
                 'segment': 'menu',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -739,6 +754,7 @@ def menu_add(request):
         context = {
             'form': form,
             'checklist_notif': checklist_notification(request),
+            'urgent_notif': urgent_notification(request),
             'segment': 'menu',
             'group_segment': 'master',
             'crud': 'add',
@@ -758,6 +774,7 @@ def menu_index(request):
     context = {
         'data': menus,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'index',
@@ -786,6 +803,7 @@ def menu_update(request, _id):
         'form': form,
         'data': menus,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'update',
@@ -816,6 +834,7 @@ def menu_view(request, _id):
         'form': form,
         'data': menus,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'menu',
         'group_segment': 'master',
         'crud': 'view',
@@ -941,6 +960,7 @@ def room_index(request):
     context = {
         'data': rooms,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'index',
@@ -967,6 +987,7 @@ def room_add(request):
                 'janitor': janitor,
                 'form': form,
                 'checklist_notif': checklist_notification(request),
+                'urgent_notif': urgent_notification(request),
                 'segment': 'room',
                 'group_segment': 'master',
                 'crud': 'add',
@@ -981,6 +1002,7 @@ def room_add(request):
             'janitor': janitor,
             'form': form,
             'checklist_notif': checklist_notification(request),
+            'urgent_notif': urgent_notification(request),
             'segment': 'room',
             'group_segment': 'master',
             'crud': 'add',
@@ -1011,6 +1033,7 @@ def room_view(request, _id):
         'janitor': janitor,
         'tab': 'task',
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'view',
@@ -1043,6 +1066,7 @@ def room_update(request, _id):
         'tasks': tasks,
         'janitor': janitor,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'room',
         'group_segment': 'master',
         'crud': 'update',
@@ -1126,6 +1150,7 @@ def report_marbot(request, _from_date, _to_date, _room):
         'selected_room': _room,
         'rooms': rooms,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'report_marbot',
         'group_segment': 'report',
         'crud': 'index',
@@ -1133,6 +1158,51 @@ def report_marbot(request, _from_date, _to_date, _room):
         'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='REPORT') if not request.user.is_superuser else Auth.objects.all(),
     }
     return render(request, 'home/report_marbot.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='REPORT')
+def report_urgent_index(request):
+    checklist_urgent = Checklist.objects.filter(checklist_urgent=True)
+
+    context = {
+        'data': checklist_urgent,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
+        'segment': 'report_urgent',
+        'group_segment': 'report',
+        'crud': 'index',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='REPORT') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/report_urgent_index.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='REPORT')
+def report_urgent_detail(request, _id):
+    checklist = Checklist.objects.get(checklist_id=_id)
+
+    if request.POST:
+        checklist.checklist_urgent = True if request.POST.get(
+            'checklist_urgent') else False
+        checklist.save()
+
+        return HttpResponseRedirect(reverse('report-urgent-index'))
+
+    context = {
+        'data': checklist,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
+        'segment': 'report_urgent',
+        'group_segment': 'report',
+        'crud': 'detail',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='REPORT') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/report_urgent_detail.html', context)
 
 
 @login_required(login_url='/login/')
@@ -3056,6 +3126,8 @@ def region_index(request):
 @login_required(login_url='/login/')
 @role_required(allowed_roles='REGION')
 def region_add(request):
+    janitor = User.objects.filter(position_id='MRB')
+
     if request.POST:
         form = FormRegion(request.POST)
         if form.is_valid():
@@ -3070,6 +3142,7 @@ def region_add(request):
     message = form.errors
     context = {
         'form': form,
+        'janitor': janitor,
         'segment': 'region',
         'group_segment': 'master',
         'crud': 'add',
@@ -3086,28 +3159,33 @@ def region_add(request):
 @role_required(allowed_roles='REGION')
 def region_view(request, _id):
     region = Region.objects.get(region_id=_id)
+    janitor = User.objects.filter(position_id='MRB')
     form = FormRegionView(instance=region)
     details = RegionDetail.objects.filter(region_id=_id)
-    areas = AreaSales.objects.exclude(regiondetail__region_id=_id).values_list(
-        'area_id', 'area_name', 'regiondetail__region_id')
+    rooms = Room.objects.exclude(room_id__in=RegionDetail.objects.all().values_list('room_id', flat=True)).values_list(
+        'room_id', 'room_name', 'regiondetail__region_id')
 
     if request.POST:
         check = request.POST.getlist('checks[]')
-        for area in areas:
-            if str(area[0]) in check:
+        for room in rooms:
+            if str(room[0]) in check:
                 try:
-                    detail = RegionDetail(region_id=_id, area_id=area[0])
+                    detail = RegionDetail(region_id=_id, room_id=room[0])
                     detail.save()
                 except IntegrityError:
                     continue
             else:
                 RegionDetail.objects.filter(
-                    region_id=_id, area_id=area[0]).delete()
+                    region_id=_id, room_id=room[0]).delete()
+
+        rooms = Room.objects.exclude(room_id__in=RegionDetail.objects.all().values_list('room_id', flat=True)).values_list(
+            'room_id', 'room_name', 'regiondetail__region_id')
 
     context = {
         'form': form,
         'data': region,
-        'areas': areas,
+        'janitor': janitor,
+        'rooms': rooms,
         'detail': details,
         'segment': 'region',
         'group_segment': 'master',
@@ -3124,6 +3202,7 @@ def region_view(request, _id):
 @role_required(allowed_roles='REGION')
 def region_update(request, _id):
     region = Region.objects.get(region_id=_id)
+    janitor = User.objects.filter(position_id='MRB')
     detail = RegionDetail.objects.filter(region_id=_id)
 
     if request.POST:
@@ -3140,6 +3219,7 @@ def region_update(request, _id):
     context = {
         'form': form,
         'data': region,
+        'janitor': janitor,
         'detail': detail,
         'segment': 'region',
         'group_segment': 'master',
@@ -3164,8 +3244,8 @@ def region_delete(request, _id):
 
 @login_required(login_url='/login/')
 @role_required(allowed_roles='REGION')
-def region_detail_delete(request, _id, _area):
-    detail = RegionDetail.objects.get(region_id=_id, area_id=_area)
+def region_detail_delete(request, _id, _room):
+    detail = RegionDetail.objects.get(region_id=_id, room_id=_room)
     detail.delete()
 
     return HttpResponseRedirect(reverse('region-view', args=[_id]))
@@ -3698,6 +3778,7 @@ def checklist_index(request):
     context = {
         'data': room,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'index',
@@ -3712,19 +3793,6 @@ def checklist_index(request):
 @role_required(allowed_roles='CHECKLIST')
 def checklist_view(request, _id):
     room = Room.objects.get(room_id=_id)
-    all_tasks = Task.objects.all()
-    checklist = Checklist.objects.filter(checklist_date=datetime.date.today(
-    ), room_id=_id) if Checklist.objects.filter(checklist_date=datetime.date.today(), room_id=_id) else None
-
-    if not checklist:
-        for task in all_tasks:
-            new_checklist = Checklist(
-                room_id=task.room_id,
-                task=task,
-                checklist_date=datetime.date.today(),
-            )
-            new_checklist.save()
-
     today_checklist = Checklist.objects.filter(
         checklist_date=datetime.date.today(), room_id=_id)
 
@@ -3732,6 +3800,7 @@ def checklist_view(request, _id):
         'room': room,
         'data': today_checklist,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'view',
@@ -3753,6 +3822,8 @@ def checklist_detail(request, _id, _task):
     if request.POST:
         checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'
         checklist.checklist_remark = request.POST.get('checklist_remark')
+        checklist.checklist_urgent = True if request.POST.get(
+            'checklist_urgent') else False
         if checklist.checklist_status == 'Sedang Dikerjakan':
             checklist.checklist_start = datetime.datetime.now()
         else:
@@ -3782,6 +3853,7 @@ def checklist_detail(request, _id, _task):
         'task': task,
         'data': checklist,
         'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
         'segment': 'checklist',
         'group_segment': 'job',
         'crud': 'detail',

@@ -57,22 +57,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="shadow-none">
-                                        {{ form.janitor.label_tag }}
-                                        <select name="janitor" class="form-control form-select-sm" required>
-                                            <option value="">-- Pilih Petugas --</option>
-                                            {% for item in janitor %}
-                                            <option value="{{ item.user_id }}">{{ item.username }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <div class="text-sm text-danger">
-                                            {{ form.janitor.errors }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

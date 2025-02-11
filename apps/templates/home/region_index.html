@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Region List {% endblock title %}
+{% block title %} Kategori {% endblock title %}
 
 {% block content %}
 
@@ -11,10 +11,10 @@
             <div class="card mb-4 p-4">
                 <div class="row mb-4">
                     <div class="col-6 d-flex align-items-center">
-                        <h4 class="mb-0">Region List</h4>
+                        <h4 class="mb-0">Kategori</h4>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-sm bg-gradient-danger mb-0 {% if not btn.add and not request.user.is_superuser %}disabled{% endif %}" href="{% url 'region-add' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Region</a>
+                        <a class="btn btn-sm bg-gradient-primary mb-0 {% if not btn.add and not request.user.is_superuser %}disabled{% endif %}" href="{% url 'region-add' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Kategori</a>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
@@ -22,10 +22,9 @@
                         <table class="table hover align-items-center mb-0" id="myTable">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Region ID
-                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID Kategori</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                        Region Name</th>
+                                        Nama Kategori</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,6 +55,7 @@
 
 {% block javascripts %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready( function () {
       $('#myTable').DataTable();
@@ -67,7 +67,13 @@
     } );
 
     $(document).on('click', 'tbody tr', function() {
-        window.location = $(this).data('href');
+        var href = $(this).data('href');
+        
+        if(href) { // Check if href data exists
+            window.location = href;
+        } else {
+            console.log("Tidak ada data");
+        }
     });
 </script>
 

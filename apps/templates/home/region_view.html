@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} View Region {% endblock title %}
+{% block title %} Kategori {% endblock title %}
 
 {% block content %}
 
@@ -13,13 +13,13 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-6 d-flex align-items-center">
-                                <h4 class="mb-2">Region ID: {{ data.region_id }}</h4>
+                                <h4 class="mb-2">ID Kategori: {{ data.region_id }}</h4>
                             </div>
                             <div class="col-6 text-end">
-                                <a href="{% if crud == 'view' %}{% url 'region-index' %}{% else %}{% url 'region-view' data.region_id %}{% endif %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;{% if crud == 'view' %}Back{% else %}Cancel{% endif %}</a>
-                                <a href="{% url 'region-update' data.region_id %}" class="btn btn-sm bg-gradient-dark mb-0 {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %}" {% if crud == 'update' %}hidden{% endif %}><i class="fas fa-edit"></i>&nbsp;&nbsp;Edit</a>
-                                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0" {% if crud == 'view' %}hidden{% endif %}><i class="fas fa-save"></i>&nbsp;&nbsp;Save</button>
-                                <button type="button" class="btn btn-sm bg-gradient-danger mb-0 {% if not btn.delete and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}" data-bs-toggle="modal" data-bs-target="#confirm-{{ data.region_id }}"><i class="fas fa-trash"></i>&nbsp;&nbsp;Delete</button>
+                                <a href="{% if crud == 'view' %}{% url 'region-index' %}{% else %}{% url 'region-view' data.region_id %}{% endif %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;{% if crud == 'view' %}Kembali{% else %}Batal{% endif %}</a>
+                                <a href="{% url 'region-update' data.region_id %}" class="btn btn-sm bg-gradient-dark mb-0 {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %}" {% if crud == 'update' %}hidden{% endif %}><i class="fas fa-edit"></i>&nbsp;&nbsp;Ubah</a>
+                                <button type="submit" class="btn btn-sm bg-gradient-dark mb-0" {% if crud == 'view' %}hidden{% endif %}><i class="fas fa-save"></i>&nbsp;&nbsp;Simpan</button>
+                                <button type="button" class="btn btn-sm bg-gradient-danger mb-0 {% if not btn.delete and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}" data-bs-toggle="modal" data-bs-target="#confirm-{{ data.region_id }}"><i class="fas fa-trash"></i>&nbsp;&nbsp;Hapus</button>
                             </div>
                         </div>
                     </div>
@@ -28,14 +28,14 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="ModalLabel">Confirmation</h5>
+                                    <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
                                 </div>
                                 <div class="modal-body border-bottom-0">
-                                    Are you sure you want to delete region <strong>{{ data.region_name }}</strong>?
+                                    Anda yakin akan menghapus kategori <strong>{{ data.region_name }}</strong>?
                                 </div>
                                 <div class="modal-footer border-0">
-                                    <button type="button" class="btn btn-sm bg-gradient-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <a href="{% url 'region-delete' data.region_id %}" role="button" class="btn btn-sm bg-gradient-danger text-white">Delete
+                                    <button type="button" class="btn btn-sm bg-gradient-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <a href="{% url 'region-delete' data.region_id %}" role="button" class="btn btn-sm bg-gradient-danger text-white">Hapus
                                     </a>
                                 </div>
                             </div>
@@ -54,6 +54,20 @@
                                         {{ form.region_name.label_tag }}{{ form.region_name }}
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="shadow-none">
+                                        {{ form.janitor.label_tag }}
+                                        <select name="janitor" class="form-control form-select-sm" required {% if not btn.edit and not request.user.is_superuser %}disabled{% endif %} {% if crud == 'view' %}disabled{% endif %}>
+                                            <option value="">-- Pilih Petugas --</option>
+                                            {% for item in janitor %}
+                                            <option value="{{ item.user_id }}" {% if item.user_id == data.janitor_id %}selected{% endif %}>{{ item.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="text-sm text-danger">
+                                            {{ form.janitor.errors }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -62,10 +76,10 @@
             <div class="card mt-2 mb-4 p-4">
                 <div class="row mb-0">
                     <div class="col-6 d-flex align-items-center">
-                        <h5 class="mb-0">Area List</h5>
+                        <h5 class="mb-0">Daftar Ruangan</h5>
                     </div>
                     <div class="col-6 text-end">
-                        <button type="button" class="btn btn-sm bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#dialog-popup" {% if not btn.edit and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Area</button>
+                        <button type="button" class="btn btn-sm bg-gradient-primary mb-0" data-bs-toggle="modal" data-bs-target="#dialog-popup" {% if not btn.edit and not request.user.is_superuser %}disabled{% else %}{% if crud == 'update' %}disabled{% endif %}{% endif %}><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Ruangan</button>
                     </div>
                 </div>
                 <div class="modal fade" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -73,22 +87,22 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="ModalLabel">Select Area</h5>
+                                <h5 class="modal-title" id="ModalLabel">Pilih Ruangan</h5>
                             </div>
                             <form method="post" action="{% url 'region-view' data.region_id %}" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="modal-body border-bottom-0">
                                     <div class="table-responsive p-0">
-                                        <table class="table align-items-center mb-0" id="areaTable">
+                                        <table class="table align-items-center mb-0" id="roomTable">
                                             <thead>
                                                 <tr>
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                                        Area</th>
+                                                        Ruangan</th>
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for item in areas %}
+                                                {% for item in rooms %}
                                                 <tr>
                                                     <td>
                                                         <div class="d-flex pe-2 py-1">
@@ -121,7 +135,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                        Area</th>
+                                        Ruangan</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                                 </tr>
                             </thead>
@@ -131,26 +145,26 @@
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.area.area_name }}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.room.room_name }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.area_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle py-0"></i></button>
+                                        <button class="btn-icon-only text-dark bg-transparent border-0" data-bs-toggle="modal" {% if btn.edit or request.user.is_superuser %}data-bs-target="#delete-{{ item.room_id }}"{% else %}disabled{% endif %} {% if crud == 'update' %}disabled{% endif %}><i class="fas fa-times-circle py-0"></i></button>
                                     </td>
-                                    <div class="modal fade" id="delete-{{ item.area_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    <div class="modal fade" id="delete-{{ item.room_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                         aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="ModalLabel">Confirmation</h5>
+                                                    <h5 class="modal-title" id="ModalLabel">Konfirmasi</h5>
                                                 </div>
                                                 <div class="modal-body border-bottom-0">
-                                                    Are you sure you want to delete area <strong>{{ item.area.area_name }}</strong>?
+                                                    Anda yakin akan menghapus ruangan <strong>{{ item.room.room_name }}</strong>?
                                                 </div>
                                                 <div class="modal-footer border-0">
-                                                    <a href="{% url 'region-view' item.region_id %}" role="button" class="btn btn-sm bg-gradient-dark">Cancel</a>
-                                                    <a href="{% url 'region-detail-delete' item.region_id item.area_id %}" role="button" class="btn btn-sm bg-gradient-danger text-white">Delete
+                                                    <a href="{% url 'region-view' item.region_id %}" role="button" class="btn btn-sm bg-gradient-dark">Batal</a>
+                                                    <a href="{% url 'region-detail-delete' item.region_id item.room_id %}" role="button" class="btn btn-sm bg-gradient-danger text-white">Hapus
                                                     </a>
                                                 </div>
                                             </div>
@@ -170,6 +184,7 @@
 {% endblock content %}
 
 {% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready( function () {
         $('#myTable').DataTable(
@@ -179,7 +194,7 @@
             }
         );
         
-        $('#areaTable').DataTable();
+        $('#roomTable').DataTable();
 
         let btn = document.getElementsByClassName('paginate_button');
         for (const button of btn) {

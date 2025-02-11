@@ -446,7 +446,6 @@ class FormRoom(ModelForm):
         self.label_suffix = ''
         self.fields['room_id'].label = 'ID Ruangan'
         self.fields['room_name'].label = 'Nama Ruangan'
-        self.fields['janitor'].label = 'Petugas'
         self.fields['room_id'].widget = forms.TextInput(
             {'class': 'form-control-sm text-uppercase'})
 
@@ -460,7 +459,6 @@ class FormRoomUpdate(ModelForm):
         super(FormRoomUpdate, self).__init__(*args, **kwargs)
         self.label_suffix = ''
         self.fields['room_name'].label = 'Nama Ruangan'
-        self.fields['janitor'].label = 'Petugas'
         self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
 
@@ -475,13 +473,12 @@ class FormRoomView(ModelForm):
         super(FormRoomView, self).__init__(*args, **kwargs)
         self.label_suffix = ''
         self.fields['room_name'].label = 'Nama Ruangan'
-        self.fields['janitor'].label = 'Petugas'
         self.fields['room_name'].widget = forms.TextInput(
             {'class': 'form-control-sm', 'readonly': 'readonly'})
 
     class Meta:
         model = Room
-        fields = ['room_id', 'room_name', 'janitor']
+        fields = ['room_id', 'room_name']
 
 
 class FormEquipment(ModelForm):
@@ -922,42 +919,45 @@ class FormRegion(ModelForm):
     def __init__(self, *args, **kwargs):
         super(FormRegion, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['region_id'].label = 'Region ID'
+        self.fields['region_id'].label = 'ID Kategori'
         self.fields['region_id'].widget = forms.TextInput(
             {'class': 'form-control-sm text-uppercase'})
-        self.fields['region_name'].label = 'Region Name'
+        self.fields['region_name'].label = 'Nama Kategori'
         self.fields['region_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
+        self.fields['janitor'].label = 'Petugas'
 
     class Meta:
         model = Region
-        fields = ['region_id', 'region_name']
+        fields = ['region_id', 'region_name', 'janitor']
 
 
 class FormRegionUpdate(ModelForm):
     def __init__(self, *args, **kwargs):
         super(FormRegionUpdate, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['region_name'].label = 'Region Name'
+        self.fields['region_name'].label = 'Nama Kategori'
         self.fields['region_name'].widget = forms.TextInput(
             {'class': 'form-control-sm'})
+        self.fields['janitor'].label = 'Petugas'
 
     class Meta:
         model = Region
-        fields = ['region_name']
+        fields = ['region_name', 'janitor']
 
 
 class FormRegionView(ModelForm):
     def __init__(self, *args, **kwargs):
         super(FormRegionView, self).__init__(*args, **kwargs)
         self.label_suffix = ''
-        self.fields['region_name'].label = 'Region Name'
+        self.fields['region_name'].label = 'Nama Kategori'
         self.fields['region_name'].widget = forms.TextInput(
             {'class': 'form-control-sm', 'readonly': 'readonly'})
+        self.fields['janitor'].label = 'Petugas'
 
     class Meta:
         model = Region
-        fields = ['region_id', 'region_name']
+        fields = ['region_id', 'region_name', 'janitor']
 
 
 class FormCustomer(ModelForm):
