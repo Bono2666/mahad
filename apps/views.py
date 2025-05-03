@@ -1256,10 +1256,10 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
 
     if _room == 'all':
         checklists = Checklist.objects.filter(
-            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
+            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor', 'checklist_status', 'checklist_duration', 'checklist_by', 'checklist_remark', 'checklist_attachment')
     else:
         checklists = Checklist.objects.filter(
-            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor__username', 'checklist_status', 'checklist_duration', 'checklist_by__username', 'checklist_remark', 'checklist_attachment')
+            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor', 'checklist_status', 'checklist_duration', 'checklist_by', 'checklist_remark', 'checklist_attachment')
 
     # Create a HttpResponse object with the csv data
     response = HttpResponse(
