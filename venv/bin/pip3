@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/Users/bono2666/Library/CloudStorage/OneDrive-Personal/Being Worked On/Al Ukhuwah/marbot/venv/bin/python3.11" "$0" "$@"
-' '''
+#!/Users/bono2666/Downloads/mahad/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
