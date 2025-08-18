@@ -10,7 +10,7 @@
   <hr class="horizontal default mt-2">
   <div class="collapse navbar-collapse  w-auto mb-4 " id="sidenav-collapse-main">
     <ul class="navbar-nav">
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a href="{% if 'update' and 'add' not in crud %}{% url 'home' %}{% endif %}" class="nav-link button {% if 'index' in segment %} active {% endif %}">
 
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -30,91 +30,92 @@
           </div>
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
-      </li>
+      </li> -->
       <li class="nav-item">
-        <a class="nav-link {% if 'job' in group_segment %}active{% endif %} {% if 'job' not in group_segment %}collapsed{% endif %}" href="" data-bs-toggle="collapse" data-bs-target="#job-menu">
+        <a class="nav-link {% if 'absence' in group_segment %}active{% endif %} {% if 'absence' not in group_segment %}collapsed{% endif %}" href="">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            {% if 'job' in group_segment %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>contactless-card</title>
-              <g fill="#F7F7F7" stroke="#F7F7F7">
-                <path d="M24.865,16.814a6.976,6.976,0,0,0,0-7.628" fill="none" stroke="inherit" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <path d="M21.34,14.856a2.94,2.94,0,0,0,0-3.712" fill="none" stroke="inherit" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <path d="M1,25V7A2,2,0,0,1,3,5H29a2,2,0,0,1,2,2V25a2,2,0,0,1-2,2H3A2,2,0,0,1,1,25Z" fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <line x1="6" y1="22" x2="18" y2="22" fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line>
-                <line x1="22" y1="22" x2="26" y2="22" fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line>
-                <rect x="6" y="10" width="5" height="4" fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></rect>
-                <circle cx="18" cy="13" r="1" data-stroke="none" stroke="none"></circle>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <title>dial</title>
+              <g fill="none">
+                <path d="M3.51953 19.0693C3.91006 18.6788 4.54308 18.6788 4.93359 19.0693C5.3241 19.4599 5.32413 20.0929 4.93359 20.4834L4.92676 20.4902C4.53623 20.8807 3.90321 20.8807 3.5127 20.4902C3.1222 20.0997 3.12221 19.4667 3.5127 19.0762L3.51953 19.0693ZM19.0762 19.0693C19.4422 18.7033 20.0213 18.6799 20.4141 19L20.4902 19.0693L20.4971 19.0762L20.5664 19.1523C20.8864 19.5451 20.8631 20.1242 20.4971 20.4902C20.1065 20.8806 19.4735 20.8807 19.083 20.4902L19.0762 20.4834L19.0078 20.4072C18.6873 20.0145 18.7101 19.4355 19.0762 19.0693ZM10.5859 10.5859C11.367 9.80489 12.633 9.80489 13.4141 10.5859L17.4141 14.5859L17.5518 14.7373C18.1926 15.5229 18.1463 16.6818 17.4141 17.4141C16.6818 18.1463 15.5229 18.1926 14.7373 17.5518L14.5859 17.4141L10.5859 13.4141C9.80489 12.633 9.80489 11.367 10.5859 10.5859ZM1.00977 11C1.56205 11 2.00977 11.4477 2.00977 12C2.00977 12.5523 1.56205 13 1.00977 13H1C0.447715 13 0 12.5523 0 12C0 11.4477 0.447715 11 1 11H1.00977ZM23.0098 11C23.562 11 24.0098 11.4477 24.0098 12C24.0098 12.5523 23.562 13 23.0098 13H23C22.4477 13 22 12.5523 22 12C22 11.4477 22.4477 11 23 11H23.0098ZM3.51953 3.5127C3.88578 3.14645 4.46562 3.12363 4.8584 3.44434L4.93359 3.5127L4.94141 3.51953L5.00977 3.5957C5.32994 3.98834 5.30714 4.56748 4.94141 4.93359C4.55088 5.32412 3.91689 5.32412 3.52637 4.93359L3.51953 4.92676C3.12919 4.53626 3.12917 3.90318 3.51953 3.5127ZM19.0762 3.5127C19.4667 3.12221 20.0997 3.1222 20.4902 3.5127C20.8807 3.90321 20.8807 4.53623 20.4902 4.92676L20.4834 4.93359C20.0929 5.32413 19.4599 5.32411 19.0693 4.93359C18.6788 4.54308 18.6788 3.91006 19.0693 3.51953L19.0762 3.5127ZM12 0C12.5523 5.15403e-06 13 0.447718 13 1V1.00977C13 1.56205 12.5523 2.00976 12 2.00977C11.4477 2.00977 11 1.56205 11 1.00977V1C11 0.447715 11.4477 0 12 0Z" fill="url(#1752500502782-6773768_dial_existing_0_de45fjxad)" data-glass="origin" mask="url(#1752500502782-6773768_dial_mask_52ly7uclq)"></path>
+                <path d="M3.51953 19.0693C3.91006 18.6788 4.54308 18.6788 4.93359 19.0693C5.3241 19.4599 5.32413 20.0929 4.93359 20.4834L4.92676 20.4902C4.53623 20.8807 3.90321 20.8807 3.5127 20.4902C3.1222 20.0997 3.12221 19.4667 3.5127 19.0762L3.51953 19.0693ZM19.0762 19.0693C19.4422 18.7033 20.0213 18.6799 20.4141 19L20.4902 19.0693L20.4971 19.0762L20.5664 19.1523C20.8864 19.5451 20.8631 20.1242 20.4971 20.4902C20.1065 20.8806 19.4735 20.8807 19.083 20.4902L19.0762 20.4834L19.0078 20.4072C18.6873 20.0145 18.7101 19.4355 19.0762 19.0693ZM10.5859 10.5859C11.367 9.80489 12.633 9.80489 13.4141 10.5859L17.4141 14.5859L17.5518 14.7373C18.1926 15.5229 18.1463 16.6818 17.4141 17.4141C16.6818 18.1463 15.5229 18.1926 14.7373 17.5518L14.5859 17.4141L10.5859 13.4141C9.80489 12.633 9.80489 11.367 10.5859 10.5859ZM1.00977 11C1.56205 11 2.00977 11.4477 2.00977 12C2.00977 12.5523 1.56205 13 1.00977 13H1C0.447715 13 0 12.5523 0 12C0 11.4477 0.447715 11 1 11H1.00977ZM23.0098 11C23.562 11 24.0098 11.4477 24.0098 12C24.0098 12.5523 23.562 13 23.0098 13H23C22.4477 13 22 12.5523 22 12C22 11.4477 22.4477 11 23 11H23.0098ZM3.51953 3.5127C3.88578 3.14645 4.46562 3.12363 4.8584 3.44434L4.93359 3.5127L4.94141 3.51953L5.00977 3.5957C5.32994 3.98834 5.30714 4.56748 4.94141 4.93359C4.55088 5.32412 3.91689 5.32412 3.52637 4.93359L3.51953 4.92676C3.12919 4.53626 3.12917 3.90318 3.51953 3.5127ZM19.0762 3.5127C19.4667 3.12221 20.0997 3.1222 20.4902 3.5127C20.8807 3.90321 20.8807 4.53623 20.4902 4.92676L20.4834 4.93359C20.0929 5.32413 19.4599 5.32411 19.0693 4.93359C18.6788 4.54308 18.6788 3.91006 19.0693 3.51953L19.0762 3.5127ZM12 0C12.5523 5.15403e-06 13 0.447718 13 1V1.00977C13 1.56205 12.5523 2.00976 12 2.00977C11.4477 2.00977 11 1.56205 11 1.00977V1C11 0.447715 11.4477 0 12 0Z" fill="url(#1752500502782-6773768_dial_existing_0_de45fjxad)" data-glass="clone" filter="url(#1752500502782-6773768_dial_filter_ptlik7nnh)" clip-path="url(#1752500502782-6773768_dial_clipPath_wdrys23hw)"></path>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12.7954 11.2046C12.3561 10.7653 11.6439 10.7653 11.2046 11.2046C10.7653 11.6439 10.7653 12.3561 11.2046 12.7954L15.1421 16.7329L15.2278 16.8098C15.6697 17.1702 16.321 17.1448 16.7329 16.7329C17.1448 16.321 17.1702 15.6697 16.8098 15.2278L16.7329 15.1421L12.7954 11.2046Z" fill="url(#1752500502782-6773768_dial_existing_1_yir1teo73)" data-glass="blur"></path>
+                <path d="M12 3C16.9706 3 21 7.02944 21 12C21 14.8278 19.695 17.3501 17.6553 19H16.3652C18.6976 17.5424 20.25 14.9531 20.25 12C20.25 7.44365 16.5563 3.75 12 3.75C7.44365 3.75 3.75 7.44365 3.75 12C3.75 14.9531 5.30238 17.5424 7.63477 19H6.34473C4.30501 17.3501 3 14.8278 3 12C3 7.02944 7.02944 3 12 3Z" fill="url(#1752500502782-6773768_dial_existing_2_yr21dlssj)"></path>
+                <defs>
+                  <linearGradient id="1752500502782-6773768_dial_existing_0_de45fjxad" x1="12.005" y1="0" x2="12.005" y2="20.783" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#575757"></stop>
+                    <stop offset="1" stop-color="#151515"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502782-6773768_dial_existing_1_yir1teo73" x1="12" y1="3" x2="12" y2="21" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E3E3E5" stop-opacity=".6"></stop>
+                    <stop offset="1" stop-color="#BBBBC0" stop-opacity=".6"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502782-6773768_dial_existing_2_yr21dlssj" x1="12" y1="3" x2="12" y2="15.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#fff" stop-opacity="1"></stop>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                  </linearGradient>
+                  <filter id="1752500502782-6773768_dial_filter_ptlik7nnh" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
+                    <feGaussianBlur stdDeviation="2" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur>
+                  </filter>
+                  <clipPath id="1752500502782-6773768_dial_clipPath_wdrys23hw">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12.7954 11.2046C12.3561 10.7653 11.6439 10.7653 11.2046 11.2046C10.7653 11.6439 10.7653 12.3561 11.2046 12.7954L15.1421 16.7329L15.2278 16.8098C15.6697 17.1702 16.321 17.1448 16.7329 16.7329C17.1448 16.321 17.1702 15.6697 16.8098 15.2278L16.7329 15.1421L12.7954 11.2046Z" fill="url(#1752500502782-6773768_dial_existing_1_yir1teo73)"></path>
+                  </clipPath>
+                  <mask id="1752500502782-6773768_dial_mask_52ly7uclq">
+                    <rect width="100%" height="100%" fill="#FFF"></rect>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12.7954 11.2046C12.3561 10.7653 11.6439 10.7653 11.2046 11.2046C10.7653 11.6439 10.7653 12.3561 11.2046 12.7954L15.1421 16.7329L15.2278 16.8098C15.6697 17.1702 16.321 17.1448 16.7329 16.7329C17.1448 16.321 17.1702 15.6697 16.8098 15.2278L16.7329 15.1421L12.7954 11.2046Z" fill="#000"></path>
+                  </mask>
+                </defs>
               </g>
             </svg>
-            {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>contactless-card</title>
-              <g fill="#212121" stroke="#212121">
-                <path d="M24.865,16.814a6.976,6.976,0,0,0,0-7.628" fill="none" stroke="inherit" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <path d="M21.34,14.856a2.94,2.94,0,0,0,0-3.712" fill="none" stroke="inherit" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <path d="M1,25V7A2,2,0,0,1,3,5H29a2,2,0,0,1,2,2V25a2,2,0,0,1-2,2H3A2,2,0,0,1,1,25Z" fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path>
-                <line x1="6" y1="22" x2="18" y2="22" fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line>
-                <line x1="22" y1="22" x2="26" y2="22" fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line>
-                <rect x="6" y="10" width="5" height="4" fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></rect>
-                <circle cx="18" cy="13" r="1" data-stroke="none" stroke="none"></circle>
-              </g>
-            </svg>
-            {% endif %}
           </div>
-          <span class="nav-link-text ms-1">Pekerjaan{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
+          <span class="nav-link-text ms-1">Absensi{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
         </a>
-
-        <div class="multi-level ms-5 collapse {% if 'job' in group_segment %}show{% endif %}" role="list" id="job-menu" aria-expanded="{% if 'job' in group_segment %}true{% else %}false{% endif %}">
-          <ul class="flex-column nav">
-            <li class="nav-item {% if segment == 'checklist' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CHECKLIST' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'checklist-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CHECKLIST' not in role and not request.user.is_superuser %}disabled{% endif %}">Checklist{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill badge-notification ms-2">{{ checklist_notif }}</span>{% endif %}</span>
-              </a>
-            </li>
-          </ul>
-        </div>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if 'report' in group_segment %}active{% endif %} {% if 'report' not in group_segment %}collapsed{% endif %}" href="#report-menu" data-bs-toggle="collapse" data-bs-target="#report-menu" aria-controls="report-menu" role="button">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            {% if 'report' in group_segment %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-              <title>Report</title>
-              <g stroke-width="2" fill="#F7F7F7" stroke="#F7F7F7">
-                <polyline fill="none" stroke="#F7F7F7" stroke-miterlimit="10" points="30,2 30,14 42,14 " stroke-linejoin="miter" stroke-linecap="butt"></polyline> 
-                <polygon fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" points="30,2 6,2 6,46 42,46 42,14 " stroke-linejoin="miter"></polygon> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="36" x2="34" y2="36" stroke-linejoin="miter"></line> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="26" x2="34" y2="26" stroke-linejoin="miter"></line> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="16" x2="22" y2="16" stroke-linejoin="miter"></line>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <title>files</title>
+              <g fill="none">
+                <path d="M8.40248 1C7.3938 1 6.42236 1.38108 5.68272 2.06693L2.28024 5.22196C1.46393 5.9789 1 7.04178 1 8.15503L1 14.5C1 16.433 2.567 18 4.5 18H12.5C14.433 18 16 16.433 16 14.5V4.5C16 2.567 14.433 1 12.5 1L8.40248 1Z" fill="url(#1752500502785-6928967_files_existing_0_u7sd7dn4k)" data-glass="origin" mask="url(#1752500502785-6928967_files_mask_412n3jmqd)"></path>
+                <path d="M8.40248 1C7.3938 1 6.42236 1.38108 5.68272 2.06693L2.28024 5.22196C1.46393 5.9789 1 7.04178 1 8.15503L1 14.5C1 16.433 2.567 18 4.5 18H12.5C14.433 18 16 16.433 16 14.5V4.5C16 2.567 14.433 1 12.5 1L8.40248 1Z" fill="url(#1752500502785-6928967_files_existing_0_u7sd7dn4k)" data-glass="clone" filter="url(#1752500502785-6928967_files_filter_0whf7kuql)" clip-path="url(#1752500502785-6928967_files_clipPath_5sqyfl1z9)"></path>
+                <path d="M15.5975 6C16.6062 6 17.5776 6.38108 18.3173 7.06693L21.7198 10.222C22.5361 10.9789 23 12.0418 23 13.155L23 19.5C23 21.433 21.433 23 19.5 23L11.5 23C9.567 23 8 21.433 8 19.5L8 9.5C8 7.567 9.56701 6 11.5 6L15.5975 6Z" fill="url(#1752500502785-6928967_files_existing_1_yc9h3ai2m)" data-glass="blur"></path>
+                <path d="M8 19.5V9.5C8 7.567 9.567 6 11.5 6H15.5977L15.7861 6.00488C16.7267 6.04926 17.624 6.4244 18.3174 7.06738L21.7197 10.2217C22.536 10.9786 23 12.042 23 13.1553V19.5L22.9951 19.6797C22.9046 21.4697 21.4696 22.9046 19.6797 22.9951L19.5 23V22.25C21.0188 22.25 22.25 21.0188 22.25 19.5V13.1553C22.25 12.2508 21.8732 11.3865 21.21 10.7715L17.8076 7.61719C17.2067 7.05997 16.4172 6.75004 15.5977 6.75H11.5C9.98122 6.75 8.75 7.98122 8.75 9.5V19.5C8.75 21.0188 9.98122 22.25 11.5 22.25V23L11.3203 22.9951C9.47083 22.9016 8 21.3727 8 19.5ZM19.5 22.25V23H11.5V22.25H19.5Z" fill="url(#1752500502785-6928967_files_existing_2_bhvt9x3j0)"></path>
+                <defs>
+                  <linearGradient id="1752500502785-6928967_files_existing_0_u7sd7dn4k" x1="8.5" y1="1" x2="8.5" y2="18" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#575757"></stop>
+                    <stop offset="1" stop-color="#151515"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502785-6928967_files_existing_1_yc9h3ai2m" x1="23" y1="14.5" x2="8" y2="14.5" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E3E3E5" stop-opacity=".6"></stop>
+                    <stop offset="1" stop-color="#BBBBC0" stop-opacity=".6"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502785-6928967_files_existing_2_bhvt9x3j0" x1="15.5" y1="6" x2="15.5" y2="15.845" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#fff"></stop>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                  </linearGradient>
+                  <filter id="1752500502785-6928967_files_filter_0whf7kuql" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
+                    <feGaussianBlur stdDeviation="2" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur>
+                  </filter>
+                  <clipPath id="1752500502785-6928967_files_clipPath_5sqyfl1z9">
+                    <path d="M15.5975 6C16.6062 6 17.5776 6.38108 18.3173 7.06693L21.7198 10.222C22.5361 10.9789 23 12.0418 23 13.155L23 19.5C23 21.433 21.433 23 19.5 23L11.5 23C9.567 23 8 21.433 8 19.5L8 9.5C8 7.567 9.56701 6 11.5 6L15.5975 6Z" fill="url(#1752500502785-6928967_files_existing_1_yc9h3ai2m)"></path>
+                  </clipPath>
+                  <mask id="1752500502785-6928967_files_mask_412n3jmqd">
+                    <rect width="100%" height="100%" fill="#FFF"></rect>
+                    <path d="M15.5975 6C16.6062 6 17.5776 6.38108 18.3173 7.06693L21.7198 10.222C22.5361 10.9789 23 12.0418 23 13.155L23 19.5C23 21.433 21.433 23 19.5 23L11.5 23C9.567 23 8 21.433 8 19.5L8 9.5C8 7.567 9.56701 6 11.5 6L15.5975 6Z" fill="#000"></path>
+                  </mask>
+                </defs>
               </g>
             </svg>
-            {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-              <title>Report</title>
-              <g stroke-width="2" fill="#212121" stroke="#212121">
-                <polyline fill="none" stroke="#212121" stroke-miterlimit="10" points="30,2 30,14 42,14 " stroke-linejoin="miter" stroke-linecap="butt"></polyline> 
-                <polygon fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" points="30,2 6,2 6,46 42,46 42,14 " stroke-linejoin="miter"></polygon> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="36" x2="34" y2="36" stroke-linejoin="miter"></line> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="26" x2="34" y2="26" stroke-linejoin="miter"></line> 
-                <line fill="none" stroke-linecap="square" stroke-miterlimit="10" x1="14" y1="16" x2="22" y2="16" stroke-linejoin="miter"></line>
-              </g>
-            </svg>
-            {% endif %}
           </div>
           <span class="nav-link-text ms-1">Laporan{% if urgent_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
         </a>
 
         <div class="multi-level ms-5 collapse {% if 'report' in group_segment %}show{% endif %}" role="list" id="report-menu" aria-expanded="{% if 'report' in group_segment %}true{% else %}false{% endif %}">
           <ul class="flex-column nav">
-            <li class="nav-item {% if segment == 'report_marbot' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '0' '0' 'all' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pekerjaan</span>
-              </a>
-            </li>
-            <li class="nav-item {% if segment == 'report_urgent' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-urgent-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Butuh Perhatian{% if urgent_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill badge-notification ms-2">{{ urgent_notif }}</span>{% endif %}</span>
+            <li class="nav-item {% if segment == 'att-report' %}active{% endif %} list-unstyled">
+              <a class="nav-link button cursor-pointer {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '0' '0' 'all' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Absensi</span>
               </a>
             </li>
           </ul>
@@ -123,25 +124,39 @@
       <li class="nav-item">
         <a class="nav-link {% if 'master' in group_segment %}active{% endif %} {% if 'master' not in group_segment %}collapsed{% endif %}" href="{% url 'user-index' %}" data-bs-toggle="collapse" data-bs-target="#user-menu">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            {% if 'master' in group_segment %}
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <title>Master Data</title>
-              <g stroke-width="2" fill="#F7F7F7" stroke="#F7F7F7">
-                <polygon fill="none" stroke="#F7F7F7" stroke-linecap="square" stroke-miterlimit="10" points="2,7 12,1 22,7 12,13 " stroke-linejoin="miter"></polygon>
-                <polyline fill="none" stroke-linecap="square" stroke-miterlimit="10" points=" 22,12 12,18 2,12 " stroke-linejoin="miter"></polyline>
-                <polyline fill="none" stroke-linecap="square" stroke-miterlimit="10" points=" 22,17 12,23 2,17 " stroke-linejoin="miter"></polyline>
+              <title>stack-perspective</title>
+              <g fill="none">
+                <path d="M7 7.74759C7 5.43142 7 4.27333 7.4746 3.45742C7.89096 2.74164 8.54761 2.19667 9.32786 1.91935C10.2173 1.60324 11.3555 1.81666 13.632 2.2435L17.7794 3.02115C19.6372 3.36948 20.5662 3.54365 21.2618 4.02058C21.8752 4.44109 22.3592 5.02427 22.6594 5.70462C23 6.47626 23 7.42135 23 9.31153V13.2524C23 15.5686 23 16.7267 22.5254 17.5426C22.109 18.2584 21.4524 18.8033 20.6721 19.0807C19.7827 19.3968 18.6445 19.1833 16.368 18.7565L12.2206 17.9789C10.3627 17.6305 9.43385 17.4563 8.73819 16.9794C8.12482 16.5589 7.64083 15.9757 7.34056 15.2954C7 14.5237 7 13.5787 7 11.6885V7.74759Z" fill="url(#1752500502804-4744372_stack-perspective_existing_0_9j5b6fsew)" data-glass="origin" mask="url(#1752500502804-4744372_stack-perspective_mask_npad53mc0)"></path>
+                <path d="M7 7.74759C7 5.43142 7 4.27333 7.4746 3.45742C7.89096 2.74164 8.54761 2.19667 9.32786 1.91935C10.2173 1.60324 11.3555 1.81666 13.632 2.2435L17.7794 3.02115C19.6372 3.36948 20.5662 3.54365 21.2618 4.02058C21.8752 4.44109 22.3592 5.02427 22.6594 5.70462C23 6.47626 23 7.42135 23 9.31153V13.2524C23 15.5686 23 16.7267 22.5254 17.5426C22.109 18.2584 21.4524 18.8033 20.6721 19.0807C19.7827 19.3968 18.6445 19.1833 16.368 18.7565L12.2206 17.9789C10.3627 17.6305 9.43385 17.4563 8.73819 16.9794C8.12482 16.5589 7.64083 15.9757 7.34056 15.2954C7 14.5237 7 13.5787 7 11.6885V7.74759Z" fill="url(#1752500502804-4744372_stack-perspective_existing_0_9j5b6fsew)" data-glass="clone" filter="url(#1752500502804-4744372_stack-perspective_filter_ql7gyis96)" clip-path="url(#1752500502804-4744372_stack-perspective_clipPath_92jk82aca)"></path>
+                <path d="M1 10.7476C1 8.43142 1 7.27333 1.4746 6.45742C1.89096 5.74164 2.54761 5.19667 3.32786 4.91935C4.21727 4.60324 5.35552 4.81666 7.63201 5.2435L11.7794 6.02115C13.6372 6.36948 14.5662 6.54365 15.2618 7.02058C15.8752 7.44109 16.3592 8.02427 16.6594 8.70462C17 9.47626 17 10.4213 17 12.3115V16.2524C17 18.5686 17 19.7267 16.5254 20.5426C16.109 21.2584 15.4524 21.8033 14.6721 22.0807C13.7827 22.3968 12.6445 22.1833 10.368 21.7565L6.22056 20.9789C4.36275 20.6305 3.43385 20.4563 2.73819 19.9794C2.12482 19.5589 1.64083 18.9757 1.34056 18.2954C1 17.5237 1 16.5787 1 14.6885V10.7476Z" fill="url(#1752500502804-4744372_stack-perspective_existing_1_4m8a1fwmn)" data-glass="blur"></path>
+                <path d="M1 14.6885V10.7481C1 8.57654 0.999508 7.42228 1.39062 6.61426L1.47461 6.45704C1.83885 5.83099 2.3872 5.33599 3.04102 5.03614L3.32812 4.91895C4.21745 4.60304 5.3558 4.81641 7.63184 5.24317L11.7793 6.02149C13.637 6.36981 14.5661 6.54364 15.2617 7.02051C15.8751 7.44103 16.3589 8.02473 16.6592 8.70509C16.9996 9.47667 17 10.4216 17 12.3115V16.252C17 18.5681 17 19.7271 16.5254 20.543L16.3584 20.8027C15.9431 21.3904 15.3546 21.8384 14.6719 22.0811L14.502 22.1338C13.8668 22.3064 13.0878 22.2377 11.876 22.0313L10.3682 21.7568L6.2207 20.9785C4.47875 20.6519 3.55318 20.479 2.87109 20.0654L2.73828 19.9795C2.20164 19.6116 1.76409 19.119 1.46191 18.5459L1.34082 18.2949C1.08554 17.7163 1.02085 17.0404 1.00488 15.9414L1 14.6885ZM1.75 14.6885C1.75 15.6447 1.75005 16.3209 1.79004 16.8555C1.82931 17.3803 1.9042 17.7152 2.02637 17.9922C2.27028 18.5449 2.66391 19.0187 3.16211 19.3604C3.41188 19.5316 3.72743 19.6673 4.23633 19.8027C4.75432 19.9406 5.41869 20.066 6.3584 20.2422L10.5059 21.0195C11.6573 21.2354 12.4741 21.3879 13.1143 21.4512C13.7475 21.5137 14.127 21.4785 14.4209 21.374C15.0339 21.1561 15.5498 20.7274 15.877 20.165C16.0338 19.8954 16.1381 19.5285 16.1934 18.8945C16.2491 18.2537 16.25 17.4232 16.25 16.252V12.3115C16.25 11.3553 16.25 10.6791 16.21 10.1445C16.1707 9.61967 16.0958 9.28479 15.9736 9.00782C15.7297 8.45516 15.3361 7.9813 14.8379 7.63966C14.5881 7.46842 14.2726 7.33266 13.7637 7.19727C13.2457 7.05946 12.5813 6.93401 11.6416 6.75782L7.49414 5.98048C6.34266 5.76457 5.52593 5.61207 4.88574 5.54884C4.25249 5.48631 3.87304 5.52153 3.5791 5.62598C2.96605 5.84387 2.45018 6.27257 2.12305 6.83497C1.96625 7.10465 1.86187 7.47148 1.80664 8.10548C1.75085 8.74629 1.75 9.57679 1.75 10.7481V14.6885Z" fill="url(#1752500502804-4744372_stack-perspective_existing_2_gj8gaetpw)"></path>
+                <defs>
+                  <linearGradient id="1752500502804-4744372_stack-perspective_existing_0_9j5b6fsew" x1="15" y1="1" x2="15" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#575757"></stop>
+                    <stop offset="1" stop-color="#151515"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502804-4744372_stack-perspective_existing_1_4m8a1fwmn" x1="9" y1="4" x2="9" y2="23" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E3E3E5" stop-opacity=".6"></stop>
+                    <stop offset="1" stop-color="#BBBBC0" stop-opacity=".6"></stop>
+                  </linearGradient>
+                  <linearGradient id="1752500502804-4744372_stack-perspective_existing_2_gj8gaetpw" x1="9" y1="4.768" x2="9" y2="14.881" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#fff"></stop>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                  </linearGradient>
+                  <filter id="1752500502804-4744372_stack-perspective_filter_ql7gyis96" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
+                    <feGaussianBlur stdDeviation="2" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur>
+                  </filter>
+                  <clipPath id="1752500502804-4744372_stack-perspective_clipPath_92jk82aca">
+                    <path d="M1 10.7476C1 8.43142 1 7.27333 1.4746 6.45742C1.89096 5.74164 2.54761 5.19667 3.32786 4.91935C4.21727 4.60324 5.35552 4.81666 7.63201 5.2435L11.7794 6.02115C13.6372 6.36948 14.5662 6.54365 15.2618 7.02058C15.8752 7.44109 16.3592 8.02427 16.6594 8.70462C17 9.47626 17 10.4213 17 12.3115V16.2524C17 18.5686 17 19.7267 16.5254 20.5426C16.109 21.2584 15.4524 21.8033 14.6721 22.0807C13.7827 22.3968 12.6445 22.1833 10.368 21.7565L6.22056 20.9789C4.36275 20.6305 3.43385 20.4563 2.73819 19.9794C2.12482 19.5589 1.64083 18.9757 1.34056 18.2954C1 17.5237 1 16.5787 1 14.6885V10.7476Z" fill="url(#1752500502804-4744372_stack-perspective_existing_1_4m8a1fwmn)"></path>
+                  </clipPath>
+                  <mask id="1752500502804-4744372_stack-perspective_mask_npad53mc0">
+                    <rect width="100%" height="100%" fill="#FFF"></rect>
+                    <path d="M1 10.7476C1 8.43142 1 7.27333 1.4746 6.45742C1.89096 5.74164 2.54761 5.19667 3.32786 4.91935C4.21727 4.60324 5.35552 4.81666 7.63201 5.2435L11.7794 6.02115C13.6372 6.36948 14.5662 6.54365 15.2618 7.02058C15.8752 7.44109 16.3592 8.02427 16.6594 8.70462C17 9.47626 17 10.4213 17 12.3115V16.2524C17 18.5686 17 19.7267 16.5254 20.5426C16.109 21.2584 15.4524 21.8033 14.6721 22.0807C13.7827 22.3968 12.6445 22.1833 10.368 21.7565L6.22056 20.9789C4.36275 20.6305 3.43385 20.4563 2.73819 19.9794C2.12482 19.5589 1.64083 18.9757 1.34056 18.2954C1 17.5237 1 16.5787 1 14.6885V10.7476Z" fill="#000"></path>
+                  </mask>
+                </defs>
               </g>
             </svg>
-            {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <title>Master Data</title>
-              <g stroke-width="2" fill="#212121" stroke="#212121">
-                <polygon fill="none" stroke="#212121" stroke-linecap="square" stroke-miterlimit="10" points="2,7 12,1 22,7 12,13 " stroke-linejoin="miter"></polygon>
-                <polyline fill="none" stroke-linecap="square" stroke-miterlimit="10" points=" 22,12 12,18 2,12 " stroke-linejoin="miter"></polyline>
-                <polyline fill="none" stroke-linecap="square" stroke-miterlimit="10" points=" 22,17 12,23 2,17 " stroke-linejoin="miter"></polyline>
-              </g>
-            </svg>
-            {% endif %}
           </div>
           <span class="nav-link-text ms-1">Data Master</span>
         </a>
@@ -173,7 +188,7 @@
                 <span class="nav-link-text ms-1 {% if 'MENU' not in role and not request.user.is_superuser %}disabled{% endif %}">Menu</span>
               </a>
             </li>
-            <li class="nav-item {% if 'room' in segment %}active{% endif %} list-unstyled">
+            <!-- <li class="nav-item {% if 'room' in segment %}active{% endif %} list-unstyled">
               <a class="nav-link button cursor-pointer {% if 'ROOM' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'room-index' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'ROOM' not in role and not request.user.is_superuser %}disabled{% endif %}">Ruangan</span>
               </a>
@@ -182,7 +197,7 @@
               <a class="nav-link button cursor-pointer {% if 'REGION' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' and crud != 'delete' %}href="{% url 'region-index' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'REGION' not in role and not request.user.is_superuser %}disabled{% endif %}">Kategori</span>
               </a>
-            </li>
+            </li> -->
             <!-- <li class="nav-item {% if 'category' in segment %}active{% endif %} list-unstyled">
               <a class="nav-link button cursor-pointer {% if 'CATEGORY' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'category-index' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'CATEGORY' not in role and not request.user.is_superuser %}disabled{% endif %}">Kategori</span>
