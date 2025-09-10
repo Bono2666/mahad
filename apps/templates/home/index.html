@@ -6,6 +6,76 @@
 
     <div class="container-fluid py-4">
 
+      <div row>
+        <div class="col-lg-6 col-12">
+          <div class="row">
+            <video id="videoElement" autoplay class="d-none"></video>
+            <canvas id="canvasElement" class="d-none"></canvas>
+            <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+            <div class="col-lg-6 col-md-6 col-12">
+              <a href="{% url 'clock-in' %}">
+                <div class="card cursor-pointer">
+                  <span class="mask bg-primary opacity-10 border-radius-lg"></span>
+                  <div class="card-body p-3 position-relative">
+                    <div class="row">
+                      <div class="col-8 text-start">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl pt-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 20 20">
+                            <title>arrow door in</title>
+                            <g fill="#212121" class="nc-icon-wrapper">
+                              <path d="m17,6c0-1.195-.703-2.217-1.714-2.7l-2.993,2.993c-.188.188-.293.442-.293.707v6c0,.265.105.52.293.707l2.993,2.993c1.011-.483,1.714-1.505,1.714-2.7V6Z" stroke-width="0" fill="#212121"></path>
+                              <line x1="9" y1="10" x2="3" y2="10" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></line>
+                              <path d="m7.563,15.738c.544.761,1.43,1.262,2.437,1.262h4c1.657,0,3-1.343,3-3V6c0-1.657-1.343-3-3-3h-4c-1.009,0-1.898.502-2.441,1.267" fill="none" stroke="#212121" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                              <polyline points="6.25 12.5 9 10 6.25 7.5" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></polyline>
+                            </g>
+                          </svg>
+                        </div>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                          Absen Masuk
+                        </h5>
+                        <span class="text-white text-sm">Belum Masuk</span>
+                      </div>
+                      <div class="col-4">
+                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-12 mt-4 mt-md-0">
+              <div class="card cursor-pointer">
+                <span class="mask bg-dark opacity-10 border-radius-lg"></span>
+                <div class="card-body p-3 position-relative">
+                  <div class="row">
+                    <div class="col-8 text-start">
+                      <div class="icon icon-shape bg-white shadow text-center border-radius-2xl pt-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 20 20">
+                          <title>arrow door out</title>
+                          <g fill="#212121" class="nc-icon-wrapper">
+                            <path d="m17,6c0-1.195-.703-2.217-1.714-2.7l-2.993,2.993c-.188.188-.293.442-.293.707v6c0,.265.105.52.293.707l2.993,2.993c1.011-.483,1.714-1.505,1.714-2.7V6Z" stroke-width="0" fill="#212121"></path>
+                            <line x1="3" y1="10" x2="9" y2="10" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></line>
+                            <path d="m7.44,15.544c.526.869,1.47,1.456,2.56,1.456h4c1.657,0,3-1.343,3-3V6c0-1.657-1.343-3-3-3h-4c-1.089,0-2.033.585-2.558,1.453" fill="none" stroke="#212121" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <polyline points="5.75 7.5 3 10 5.75 12.5" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></polyline>
+                          </g>
+                        </svg>
+                      </div>
+                      <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                        Absen Pulang
+                      </h5>
+                      <span class="text-white text-sm">Belum Pulang</span>
+                    </div>
+                    <div class="col-4">
+                      <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- <div class="row">
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
@@ -318,187 +388,14 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block scripts %}
-
-  <script src="{% static 'js/plugins/chartjs.min.js' %}"></script>
-  <script>
-    // var ctx = document.getElementById("chart-bars").getContext("2d");
-
-    // new Chart(ctx, {
-    //   type: "bar",
-    //   data: {
-    //     labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    //     datasets: [{
-    //       label: "Sales",
-    //       tension: 0.4,
-    //       borderWidth: 0,
-    //       borderRadius: 4,
-    //       borderSkipped: false,
-    //       backgroundColor: "#fff",
-    //       data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
-    //       maxBarThickness: 6
-    //     }, ],
-    //   },
-    //   options: {
-    //     responsive: true,
-    //     maintainAspectRatio: false,
-    //     plugins: {
-    //       legend: {
-    //         display: false,
-    //       }
-    //     },
-    //     interaction: {
-    //       intersect: false,
-    //       mode: 'index',
-    //     },
-    //     scales: {
-    //       y: {
-    //         grid: {
-    //           drawBorder: false,
-    //           display: false,
-    //           drawOnChartArea: false,
-    //           drawTicks: false,
-    //         },
-    //         ticks: {
-    //           suggestedMin: 0,
-    //           suggestedMax: 500,
-    //           beginAtZero: true,
-    //           padding: 15,
-    //           font: {
-    //             size: 14,
-    //             family: "Open Sans",
-    //             style: 'normal',
-    //             lineHeight: 2
-    //           },
-    //           color: "#fff"
-    //         },
-    //       },
-    //       x: {
-    //         grid: {
-    //           drawBorder: false,
-    //           display: false,
-    //           drawOnChartArea: false,
-    //           drawTicks: false
-    //         },
-    //         ticks: {
-    //           display: false
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-
-    // var ctx2 = document.getElementById("chart-line").getContext("2d");
-
-    // var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
-
-    // gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
-    // gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-    // gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
-
-    // var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
-
-    // gradientStroke2.addColorStop(1, 'rgba(20,23,39,0.2)');
-    // gradientStroke2.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-    // gradientStroke2.addColorStop(0, 'rgba(20,23,39,0)'); //purple colors
-
-    // new Chart(ctx2, {
-    //   type: "line",
-    //   data: {
-    //     labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    //     datasets: [{
-    //         label: "Mobile apps",
-    //         tension: 0.4,
-    //         borderWidth: 0,
-    //         pointRadius: 0,
-    //         borderColor: "#cb0c9f",
-    //         borderWidth: 3,
-    //         backgroundColor: gradientStroke1,
-    //         fill: true,
-    //         data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-    //         maxBarThickness: 6
-
-    //       },
-    //       {
-    //         label: "Websites",
-    //         tension: 0.4,
-    //         borderWidth: 0,
-    //         pointRadius: 0,
-    //         borderColor: "#575f9a",
-    //         borderWidth: 3,
-    //         backgroundColor: gradientStroke2,
-    //         fill: true,
-    //         data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-    //         maxBarThickness: 6
-    //       },
-    //     ],
-    //   },
-    //   options: {
-    //     responsive: true,
-    //     maintainAspectRatio: false,
-    //     plugins: {
-    //       legend: {
-    //         display: false,
-    //       }
-    //     },
-    //     interaction: {
-    //       intersect: false,
-    //       mode: 'index',
-    //     },
-    //     scales: {
-    //       y: {
-    //         grid: {
-    //           drawBorder: false,
-    //           display: true,
-    //           drawOnChartArea: true,
-    //           drawTicks: false,
-    //           borderDash: [5, 5]
-    //         },
-    //         ticks: {
-    //           display: true,
-    //           padding: 10,
-    //           color: '#b2b9bf',
-    //           font: {
-    //             size: 11,
-    //             family: "Open Sans",
-    //             style: 'normal',
-    //             lineHeight: 2
-    //           },
-    //         }
-    //       },
-    //       x: {
-    //         grid: {
-    //           drawBorder: false,
-    //           display: false,
-    //           drawOnChartArea: false,
-    //           drawTicks: false,
-    //           borderDash: [5, 5]
-    //         },
-    //         ticks: {
-    //           display: true,
-    //           color: '#b2b9bf',
-    //           padding: 20,
-    //           font: {
-    //             size: 11,
-    //             family: "Open Sans",
-    //             style: 'normal',
-    //             lineHeight: 2
-    //           },
-    //         }
-    //       },
-    //     },
-    //   },
-    // });
-
-    let btn_menu = document.getElementById('dropdownTable');
-    let dropdown_menu = document.getElementsByClassName('dropdown-menu');
-    
-    // open dropdown menu
-    btn_menu.addEventListener('click', function() {
-      alert('clicked');
-        dropdown_menu[0].classList.toggle('show');
-    });
-  </script>
-
-{% endblock scripts %}
+{% block javascripts %}
+<script>
+  let btn_menu = document.getElementById('dropdownTable');
+  let dropdown_menu = document.getElementsByClassName('dropdown-menu');
+  
+  // open dropdown menu
+  btn_menu.addEventListener('click', function() {
+    dropdown_menu[0].classList.toggle('show');
+  });
+</script>
+{% endblock javascripts %}

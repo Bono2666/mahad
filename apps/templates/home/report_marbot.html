@@ -15,7 +15,7 @@
             <div class="card {% if request|is_mobile %}mb-6{% else %}mb-4{% endif %} p-4 z-index-0">
                 <div class="row mb-2">
                     <div class="{% if request|is_mobile %}col-11{% else %}col-6{% endif %} d-flex align-items-center">
-                        <h4>Laporan Pekerjaan Marbot</h4>
+                        <h4>Laporan Kehadiran</h4>
                     </div>
                     <div class="{% if request|is_mobile %}col-1{% else %}col-6{% endif %} text-end">
                         {% if request|is_mobile %}
@@ -39,60 +39,50 @@
                         <table class="table hover align-items-center mb-0" id="checklistTable">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ruangan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tugas</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Petugas</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Durasi</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dikerjakan Oleh</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Catatan</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in data %}
                                 <tr>
                                     <td>
-                                        <h6 class="mb-0 text-sm">{{ item.room.room_name }}</h6>
+                                        <h6 class="mb-0 text-sm">{{ item.user.username }}</h6>
                                     </td>
                                     <td data-sort="{{ item.checklist_date|date:"U" }}">
-                                        <h6 class="mb-0 text-sm">{{ item.checklist_date|date:"d M Y" }}</h6>
+                                        <h6 class="mb-0 text-sm">{{ item.absence_date|date:"d M Y" }}</h6>
                                     </td>
                                     <td>
-                                        <h6 class="mb-0 text-sm">{{ item.task }}</h6>
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 text-sm">{% if item.janitor %}{{ item.janitor }}{% endif %}</h6>
-                                    </td>
-                                    <td>
-                                        {% if item.checklist_status == 'Selesai' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-primary text-white status">{{ item.checklist_status }}</span>
-                                        {% elif item.checklist_status == 'Belum Dikerjakan' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-dark text-white status">{{ item.checklist_status }}</span>
-                                        {% else %}
-                                        <span class="badge rounded-pill badge-notification bg-warning text-dark status">{{ item.checklist_status }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 text-sm">{% if item.checklist_duration %}{{ item.checklist_duration }} menit{% endif %}</h6>
+                                        <h6 class="mb-0 text-sm">{{ item.absence_time|time:"H:i" }}</h6>
                                     </td>
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.checklist_by %}{{ item.checklist_by }}{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.latitude }}</h6>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <h6 class="mb-0 text-sm">{% if item.checklist_remark %}{{ item.checklist_remark|truncatechars:30 }}{% endif %}</h6>
                                     </td>
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.checklist_attachment %}<a href="{{ item.checklist_attachment.url }}" target="_blank" class="text-body">{{ item.checklist_attachment }}</a>{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.longitude }}</h6>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex pe-2 py-0">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{% if item.photo %}<a href="{{ item.photo.url }}" target="_blank" class="text-body">{{ item.photo }}</a>{% endif %}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">{{ item.status }}</h6>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -231,7 +221,7 @@
         } else {
             $('#checklistTable').DataTable({
                 "order": [[ 0, "asc" ]],
-                "scrollX": true,
+                "scrollX": false,
                 "scrollCollapse": true,
                 "lengthChange": false,
                 "scrollY": "60vh",

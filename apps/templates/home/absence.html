@@ -9,19 +9,19 @@
 <div class="container-fluid mt-0">
     <div class="row">
         <div class="col-xl-12 order-xl-1">
-            <form action="{% url 'checklist-detail' room.room_id data.task_id %}" method="post" enctype="multipart/form-data">
+            <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-8 d-flex align-items-center">
-                                <h4 class="mb-2">Ruangan: {{ room.room_name }}</h4>
+                                <h4 class="mb-2">{{ tgl }}</h4>
                             </div>
                             <div class="col-4 text-end">
                                 {% if request|is_mobile %}
-                                <a class="btn btn-sm bg-gradient-dark mb-0 rounded-circle px-2 py-2" href="{% url 'checklist-view' room.room_id %}">&nbsp;<i class="fas fa-reply text-md"></i>&nbsp;</a>
+                                <a class="btn btn-sm bg-gradient-dark mb-0 rounded-circle px-2 py-2" href="">&nbsp;<i class="fas fa-reply text-md"></i>&nbsp;</a>
                                 {% else %}
-                                <a href="{% url 'checklist-view' room.room_id %}" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Kembali</a>
+                                <a href="" class="btn btn-sm bg-gradient-dark mb-0"><i class="fas fa-reply"></i>&nbsp;&nbsp;Kembali</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -31,21 +31,14 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="shadow-none">
-                                        <h6 class="heading-small text-muted">Tugas: <span class="text-dark">{{ data.task.task_name }}</span></h6>
-                                        {% if data.checklist_status == 'Selesai' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-primary text-white">{{ data.checklist_status }}</span>
-                                        {% elif data.checklist_status == 'Belum Dikerjakan' %}
-                                        <span class="badge rounded-pill badge-notification bg-gradient-dark text-white">{{ data.checklist_status }}</span>
-                                        {% else %}
-                                        <span class="badge rounded-pill badge-notification bg-warning text-dark">{{ data.checklist_status }}</span>
-                                        {% endif %}
+                                        <h6 class="heading-small text-muted">Pukul: <span class="text-dark">{{ jam }}</span></h6>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="shadow-none">
-                                        <label class="form-control-label mt-4" for="input-checklist-remark">Catatan</label>
+                                        <label class="form-control-label mt-4" for="input-checklist-remark">Lokasi</label>
                                         <textarea name="checklist_remark" id="input-checklist-remark" class="form-control-sm" rows="4" placeholder="Tulis catatan jika diperlukan ..." {% if data.checklist_status == 'Selesai' %}disabled{% endif %} {% if not btn.edit %}disabled{% endif %}>{% if data.checklist_remark %}{{ data.checklist_remark }}{% endif %}</textarea>
                                     </div>
                                 </div>
@@ -86,24 +79,18 @@
                                             </div>
                                             <div class="modal-footer border-0">
                                                 <button role="button" class="btn bg-gradient-dark" data-bs-dismiss="modal">Batal</button>
-                                                <a href="{% url 'remove-attachment' data.checklist_id %}" role="button" class="btn bg-gradient-primary text-white">Hapus
+                                                <a href="" role="button" class="btn bg-gradient-primary text-white">Hapus
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% if data.checklist_status != 'Selesai' and btn.edit %}
                             <div class="row mt-4">
                                 <div class="col-12">
-                                    {% if data.checklist_status == 'Belum Dikerjakan' %}
-                                    <button type="submit" class="btn bg-gradient-primary mb-0"><i class="fas fa-clock"></i>&nbsp;&nbsp;Mulai Tugas</button>
-                                    {% elif data.checklist_status == 'Sedang Dikerjakan' %}
-                                    <button type="submit" class="btn bg-gradient-danger mb-0"><i class="fas fa-ban"></i>&nbsp;&nbsp;Tugas Selesai</button>
-                                    {% endif %}
+                                    <button id="absenceBtn" class="btn bg-gradient-primary mb-0"><i class="fas fa-clock"></i>&nbsp;&nbsp;Absen Masuk</button>
                                 </div>
                             </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -115,5 +102,51 @@
 {% endblock content %}
 
 {% block javascripts %}
+<script>
+    const sendUserLocation = (coords) => {
+        fetch('/submit-location/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+            })
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const absenceBtn = document.getElementById('absenceBtn');
+        absenceBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            absenceBtn.disabled = true;
+            absenceBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+            // Simulate a delay for demonstration purposes
+            setTimeout(function() {
+                // check if geolocation is available
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        sendUserLocation(position.coords);
+                        absenceBtn.innerHTML = '<i class="fas fa-check"></i>&nbsp;&nbsp;Absen Berhasil';
+                    }, function(error) {
+                        alert('Error obtaining location: ' + error.message);
+                        absenceBtn.disabled = false;
+                        absenceBtn.innerHTML = '<i class="fas fa-clock"></i>&nbsp;&nbsp;Absen Masuk';
+                    }, {
+                        enableHighAccuracy: true,
+                        maximumAge: 0
+                    }
+                );
+                } else {
+                    alert('Geolocation is not supported by this browser.');
+                    absenceBtn.disabled = false;
+                    absenceBtn.innerHTML = '<i class="fas fa-clock"></i>&nbsp;&nbsp;Absen Masuk';
+                }
+            }, 3000); // 3 seconds delay
+        });
+    });
+</script>
 
 {% endblock javascripts %}

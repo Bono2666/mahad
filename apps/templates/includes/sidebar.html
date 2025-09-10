@@ -4,13 +4,13 @@
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand button cursor-pointer m-0 pt-4" {% if crud != 'add' and crud != 'update' %}href="{% url 'home' %}"{% endif %}>
-      <img src="https://marbot.alukhuwahbsd.com/apps/static/img/brand/favicon2.png" class="navbar-brand-img w-35" alt="main_logo">
+      <img src="https://mahad.alukhuwahbsd.com/apps/static/img/brand/favicon.png" class="navbar-brand-img w-30" alt="main_logo">
     </a>
   </div>
   <hr class="horizontal default mt-2">
   <div class="collapse navbar-collapse  w-auto mb-4 " id="sidenav-collapse-main">
     <ul class="navbar-nav">
-      <!-- <li class="nav-item">
+      <li class="nav-item">
         <a href="{% if 'update' and 'add' not in crud %}{% url 'home' %}{% endif %}" class="nav-link button {% if 'index' in segment %} active {% endif %}">
 
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -28,11 +28,11 @@
               </g>
             </svg>
           </div>
-          <span class="nav-link-text ms-1">Dashboard</span>
+          <span class="nav-link-text ms-1">Beranda</span>
         </a>
-      </li> -->
+      </li>
       <li class="nav-item">
-        <a class="nav-link {% if 'absence' in group_segment %}active{% endif %} {% if 'absence' not in group_segment %}collapsed{% endif %}" href="">
+        <a class="nav-link {% if 'attendance' in group_segment %}active{% endif %} {% if 'attendance' not in group_segment %}collapsed{% endif %}" href="#attendance-menu" data-bs-toggle="collapse" data-bs-target="#attendance-menu" aria-expanded="{% if 'attendance' in group_segment %}true{% else %}false{% endif %}" aria-controls="attendance-menu">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <title>dial</title>
@@ -68,8 +68,23 @@
               </g>
             </svg>
           </div>
-          <span class="nav-link-text ms-1">Absensi{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
+          <span class="nav-link-text ms-1">Absen{% if checklist_notif > 0 %}<span class="badge bg-gradient-danger rounded-pill p-1 ms-2"><span class="visually-hidden"></span></span>{% endif %}</span>
         </a>
+
+        <div class="multi-level ms-5 collapse {% if 'attendance' in group_segment %}show{% endif %}" role="list" id="attendance-menu" aria-expanded="{% if 'attendance' in group_segment %}true{% else %}false{% endif %}">
+          <ul class="flex-column nav">
+            <li class="nav-item {% if segment == 'clock-in' %}active{% endif %} list-unstyled">
+              <a class="nav-link button cursor-pointer {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-in' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %}">Masuk</span>
+              </a>
+            </li>
+            <li class="nav-item {% if segment == 'clock-out' %}active{% endif %} list-unstyled">
+              <a class="nav-link button cursor-pointer {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '1' '0' 'all' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pulang</span>
+              </a>
+            </li>
+          </ul>
+        </div>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if 'report' in group_segment %}active{% endif %} {% if 'report' not in group_segment %}collapsed{% endif %}" href="#report-menu" data-bs-toggle="collapse" data-bs-target="#report-menu" aria-controls="report-menu" role="button">
@@ -115,7 +130,7 @@
           <ul class="flex-column nav">
             <li class="nav-item {% if segment == 'att-report' %}active{% endif %} list-unstyled">
               <a class="nav-link button cursor-pointer {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '0' '0' 'all' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Absensi</span>
+                <span class="nav-link-text ms-1 {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Kehadiran</span>
               </a>
             </li>
           </ul>

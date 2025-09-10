@@ -35,6 +35,32 @@ class User(AbstractUser):
         return self.username
 
 
+class Absence(models.Model):
+    absence_id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    absence_date = models.DateField()
+    absence_time = models.TimeField(auto_now_add=True, null=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    photo = models.ImageField(upload_to='attendance/', null=True)
+    status = models.CharField(max_length=10, null=True)
+    entry_date = models.DateTimeField(null=True)
+    entry_by = models.CharField(max_length=50, null=True)
+    update_date = models.DateTimeField(null=True)
+    update_by = models.CharField(max_length=50, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.entry_date:
+            self.entry_date = timezone.now()
+            self.entry_by = get_current_user().user_id
+        self.update_date = timezone.now()
+        self.update_by = get_current_user().user_id
+        super(Absence, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.user.username
+
+
 class Room(models.Model):
     room_id = models.CharField(max_length=50, primary_key=True)
     room_name = models.CharField(max_length=50)

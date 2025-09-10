@@ -1,7 +1,10 @@
+import base64
+import json
+import os
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.db import connection, IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.forms.models import modelformset_factory
@@ -1173,14 +1176,14 @@ def report_marbot(request, _from_date, _to_date, _room):
         _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
     to_date = datetime.datetime.strptime(
         _to_date, '%Y-%m-%d').date() if _to_date != '0' else datetime.date.today()
-    rooms = Room.objects.all()
+    rooms = User.objects.all()
 
     if _room == 'all':
-        checklists = Checklist.objects.filter(
-            checklist_date__gte=from_date, checklist_date__lte=to_date)
+        checklists = Absence.objects.filter(
+            absence_date__gte=from_date, absence_date__lte=to_date)
     else:
-        checklists = Checklist.objects.filter(
-            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date)
+        checklists = Absence.objects.filter(
+            user_id=_room, absence_date__gte=from_date, absence_date__lte=to_date)
 
     context = {
         'data': checklists,
@@ -3861,56 +3864,130 @@ def checklist_view(request, _id):
 
 
 @login_required(login_url='/login/')
-@role_required(allowed_roles='CHECKLIST')
-def checklist_detail(request, _id, _task):
-    room = Room.objects.get(room_id=_id)
-    task = Task.objects.get(task_id=_task)
-    checklist = Checklist.objects.get(room_id=_id,
-                                      task_id=_task, checklist_date=datetime.date.today())
+@role_required(allowed_roles='ABSENSI')
+def absence(request):
+    jam = datetime.datetime.now().strftime('%H:%M:%S')
+    checklist = Checklist.objects.all()
 
     if request.POST:
-        checklist.checklist_status = 'Sedang Dikerjakan' if checklist.checklist_status == 'Belum Dikerjakan' else 'Selesai'
-        checklist.checklist_remark = request.POST.get('checklist_remark')
-        checklist.checklist_urgent = True if request.POST.get(
-            'checklist_urgent') else False
-        if checklist.checklist_status == 'Sedang Dikerjakan':
-            checklist.checklist_start = datetime.datetime.now()
-        else:
-            checklist.checklist_end = datetime.datetime.now()
-            # get delta between start and end
-            delta = checklist.checklist_end - checklist.checklist_start
-            checklist.checklist_duration = delta.total_seconds() / 60
-        if request.FILES.get('checklist_attachment'):
-            checklist.checklist_attachment = request.FILES.get(
-                'checklist_attachment')
-        checklist.save()
+        # if not settings.DEBUG and request.FILES.get('checklist_attachment'):
+        #     my_file = checklist.checklist_attachment
+        #     filename = '../../www/marbot/apps/media/' + my_file.name
+        #     with open(filename, 'wb+') as temp_file:
+        #         for chunk in my_file.chunks():
+        #             temp_file.write(chunk)
+        print("POSTED")
 
-        if not settings.DEBUG and request.FILES.get('checklist_attachment'):
-            my_file = checklist.checklist_attachment
-            filename = '../../www/marbot/apps/media/' + my_file.name
+        return HttpResponseRedirect(reverse('absence'))
+
+    context = {
+        'tgl': tgl,
+        'jam': jam,
+        'data': checklist,
+        'checklist_notif': checklist_notification(request),
+        'urgent_notif': urgent_notification(request),
+        'segment': 'absence',
+        'group_segment': 'attendace',
+        'crud': 'detail',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='ABSENSI') if not request.user.is_superuser else Auth.objects.all(),
+    }
+
+    return render(request, 'home/absence.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CLOCK-IN')
+def clock_in(request):
+    hr = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad']
+    bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+           'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+    tgl = hr[datetime.datetime.now().weekday()] + ', ' + \
+        datetime.datetime.now().strftime('%-d') + ' ' + \
+        bln[int(datetime.datetime.now().strftime('%m')) - 1] + \
+        ' ' + datetime.datetime.now().strftime('%Y')
+
+    context = {
+        'tgl': tgl,
+        'segment': 'clock-in',
+        'group_segment': 'attendance',
+        'crud': 'detail',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CLOCK-IN') if not request.user.is_superuser else Auth.objects.all(),
+    }
+    return render(request, 'home/clock_in.html', context)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='ABSENSI')
+def submit_photo(request):
+    if request.POST:
+        if request.POST.get('photo'):
+            # save photo
+            format, imgstr = request.POST.get('photo').split(';base64,')
+            ext = format.split('/')[-1]
+            img_data = base64.b64decode(imgstr)
+            filename = f"{request.user.user_id}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+            file_path = os.path.join(
+                settings.MEDIA_ROOT + '/attendance/', filename)
+            with open(file_path, 'wb') as f:
+                f.write(img_data)
+
+            Absence.objects.update_or_create(
+                user_id=request.user.user_id,
+                absence_date=datetime.date.today(),
+                status=request.POST.get('status'),
+                defaults={
+                    'photo': 'attendance/' + filename
+                }
+            )
+
+        if not settings.DEBUG and request.POST.get('photo'):
+            my_file = request.POST['photo']
+            filename = '../../www/mahad/apps/media/' + my_file.name
             with open(filename, 'wb+') as temp_file:
                 for chunk in my_file.chunks():
                     temp_file.write(chunk)
 
-        if checklist.checklist_status == 'Selesai':
-            return HttpResponseRedirect(reverse('checklist-view', args=[_id]))
-        else:
-            return HttpResponseRedirect(reverse('checklist-detail', args=[_id, _task]))
+        return HttpResponseRedirect(reverse('home'))
 
-    context = {
-        'room': room,
-        'task': task,
-        'data': checklist,
-        'checklist_notif': checklist_notification(request),
-        'urgent_notif': urgent_notification(request),
-        'segment': 'checklist',
-        'group_segment': 'job',
-        'crud': 'detail',
-        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
-        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CHECKLIST') if not request.user.is_superuser else Auth.objects.all(),
-    }
+    return render(request, 'home/home.html')
 
-    return render(request, 'home/checklist_detail.html', context)
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='ABSENSI')
+def submit_location(request):
+    try:
+        data = json.loads(request.body)
+        lat = data.get('latitude')
+        lon = data.get('longitude')
+        status = data.get('status')
+
+        if not all([lat, lon]):
+            return JsonResponse({'status': 'error', 'message': 'Invalid coordinates'}, status=400)
+
+        Absence.objects.update_or_create(
+            user_id=request.user.user_id,
+            absence_date=datetime.date.today(),
+            status=status,
+            defaults={
+                'latitude': lat,
+                'longitude': lon
+            }
+        )
+
+        return HttpResponseRedirect(reverse('home'))
+
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CLOCK-IN')
+def clock_in_success(request):
+    return render(request, 'home/clock_in_success.html')
 
 
 @login_required(login_url='/login/')
