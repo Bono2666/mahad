@@ -1179,10 +1179,10 @@ def report_marbot(request, _from_date, _to_date, _room):
     rooms = User.objects.all()
 
     if _room == 'all':
-        checklists = Absence.objects.filter(
+        checklists = Attendance.objects.filter(
             absence_date__gte=from_date, absence_date__lte=to_date)
     else:
-        checklists = Absence.objects.filter(
+        checklists = Attendance.objects.filter(
             user_id=_room, absence_date__gte=from_date, absence_date__lte=to_date)
 
     context = {
@@ -3863,37 +3863,11 @@ def checklist_view(request, _id):
     return render(request, 'home/checklist_view.html', context)
 
 
-@login_required(login_url='/login/')
-@role_required(allowed_roles='ABSENSI')
-def absence(request):
-    jam = datetime.datetime.now().strftime('%H:%M:%S')
-    checklist = Checklist.objects.all()
-
-    if request.POST:
-        # if not settings.DEBUG and request.FILES.get('checklist_attachment'):
-        #     my_file = checklist.checklist_attachment
-        #     filename = '../../www/marbot/apps/media/' + my_file.name
-        #     with open(filename, 'wb+') as temp_file:
-        #         for chunk in my_file.chunks():
-        #             temp_file.write(chunk)
-        print("POSTED")
-
-        return HttpResponseRedirect(reverse('absence'))
-
-    context = {
-        'tgl': tgl,
-        'jam': jam,
-        'data': checklist,
-        'checklist_notif': checklist_notification(request),
-        'urgent_notif': urgent_notification(request),
-        'segment': 'absence',
-        'group_segment': 'attendace',
-        'crud': 'detail',
-        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
-        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='ABSENSI') if not request.user.is_superuser else Auth.objects.all(),
-    }
-
-    return render(request, 'home/absence.html', context)
+def timedelta_hours(start_time, end_time):
+    from datetime import datetime
+    FMT = '%H:%M:%S'
+    tdelta = end_time - start_time
+    return tdelta.total_seconds() / 3600
 
 
 @login_required(login_url='/login/')
@@ -3919,6 +3893,28 @@ def clock_in(request):
 
 
 @login_required(login_url='/login/')
+@role_required(allowed_roles='CLOCK-OUT')
+def clock_out(request):
+    hr = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad']
+    bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+           'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
+    tgl = hr[datetime.datetime.now().weekday()] + ', ' + \
+        datetime.datetime.now().strftime('%-d') + ' ' + \
+        bln[int(datetime.datetime.now().strftime('%m')) - 1] + \
+        ' ' + datetime.datetime.now().strftime('%Y')
+
+    context = {
+        'tgl': tgl,
+        'segment': 'clock-out',
+        'group_segment': 'attendance',
+        'crud': 'detail',
+        'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='CLOCK-OUT') if not request.user.is_superuser else Auth.objects.all(),
+    }
+    return render(request, 'home/clock_out.html', context)
+
+
+@login_required(login_url='/login/')
 @role_required(allowed_roles='ABSENSI')
 def submit_photo(request):
     if request.POST:
@@ -3933,14 +3929,26 @@ def submit_photo(request):
             with open(file_path, 'wb') as f:
                 f.write(img_data)
 
-            Absence.objects.update_or_create(
-                user_id=request.user.user_id,
-                absence_date=datetime.date.today(),
-                status=request.POST.get('status'),
-                defaults={
-                    'photo': 'attendance/' + filename
-                }
-            )
+            if request.POST.get('status') == 'Masuk':
+                Attendance.objects.update_or_create(
+                    user_id=request.user.user_id,
+                    absence_date=datetime.date.today(),
+                    defaults={
+                        'time_in': datetime.datetime.now(),
+                        'photo_in': 'attendance/' + filename,
+                        'status': request.POST.get('status'),
+                    }
+                )
+            else:
+                Attendance.objects.update_or_create(
+                    user_id=request.user.user_id,
+                    absence_date=datetime.date.today(),
+                    defaults={
+                        'time_out': datetime.datetime.now(),
+                        'photo_out': 'attendance/' + filename,
+                        'status': request.POST.get('status'),
+                    }
+                )
 
         if not settings.DEBUG and request.POST.get('photo'):
             my_file = request.POST['photo']
@@ -3966,15 +3974,23 @@ def submit_location(request):
         if not all([lat, lon]):
             return JsonResponse({'status': 'error', 'message': 'Invalid coordinates'}, status=400)
 
-        Absence.objects.update_or_create(
-            user_id=request.user.user_id,
-            absence_date=datetime.date.today(),
-            status=status,
-            defaults={
-                'latitude': lat,
-                'longitude': lon
-            }
-        )
+        attendance = Attendance.objects.get(
+            user_id=request.user.user_id, absence_date=datetime.date.today()) if Attendance.objects.get(
+            user_id=request.user.user_id, absence_date=datetime.date.today()) else None
+
+        if attendance:
+            if status == 'Masuk':
+                attendance.time_in = datetime.datetime.now()
+                attendance.lat_in = lat
+                attendance.long_in = lon
+                attendance.status = status
+                attendance.save()
+            else:
+                attendance.time_out = datetime.datetime.now()
+                attendance.lat_out = lat
+                attendance.long_out = lon
+                attendance.status = status
+                attendance.save()
 
         return HttpResponseRedirect(reverse('home'))
 
@@ -3988,6 +4004,12 @@ def submit_location(request):
 @role_required(allowed_roles='CLOCK-IN')
 def clock_in_success(request):
     return render(request, 'home/clock_in_success.html')
+
+
+@login_required(login_url='/login/')
+@role_required(allowed_roles='CLOCK-OUT')
+def clock_out_success(request):
+    return render(request, 'home/clock_out_success.html')
 
 
 @login_required(login_url='/login/')

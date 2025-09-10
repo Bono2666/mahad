@@ -8,6 +8,8 @@
 
 {% load user_agents %}
 
+{% load my_filter %}
+
 <!-- Page content -->
 <div class="container-fluid py-0">
     <div class="row">
@@ -41,10 +43,15 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam Masuk</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam Pulang</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Durasi Kerja</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat Masuk</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long Masuk</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat Pulang</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long Pulang</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto Masuk</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 </tr>
                             </thead>
@@ -58,26 +65,53 @@
                                         <h6 class="mb-0 text-sm">{{ item.absence_date|date:"d M Y" }}</h6>
                                     </td>
                                     <td>
-                                        <h6 class="mb-0 text-sm">{{ item.absence_time|time:"H:i" }}</h6>
+                                        <h6 class="mb-0 text-sm">{{ item.time_in|time:"H:i" }}</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">{% if item.time_out %}{{ item.time_out|time:"H:i" }}{% else %}-{% endif %}</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-0 text-sm">{% if item.total_hours %}{{ item.total_hours|format_duration_hhmm }}{% else %}-{% endif %}</h6>
                                     </td>
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.latitude }}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.lat_in }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.longitude }}</h6>
+                                                <h6 class="mb-0 text-sm">{{ item.long_in }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.photo %}<a href="{{ item.photo.url }}" target="_blank" class="text-body">{{ item.photo }}</a>{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">{% if item.lat_out %}{{ item.lat_out }}{% else %}-{% endif %}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex pe-2 py-0">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{% if item.long_out %}{{ item.long_out }}{% else %}-{% endif %}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex pe-2 py-0">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{% if item.photo_in %}<a href="{{ item.photo_in.url }}" target="_blank" class="text-body">{{ item.photo_in }}</a>{% endif %}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex pe-2 py-0">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{% if item.photo_out %}<a href="{{ item.photo_out.url }}" target="_blank" class="text-body">{{ item.photo_out }}</a>{% else %}-{% endif %}</h6>
                                             </div>
                                         </div>
                                     </td>
@@ -221,7 +255,7 @@
         } else {
             $('#checklistTable').DataTable({
                 "order": [[ 0, "asc" ]],
-                "scrollX": false,
+                "scrollX": true,
                 "scrollCollapse": true,
                 "lengthChange": false,
                 "scrollY": "60vh",

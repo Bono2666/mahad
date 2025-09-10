@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
@@ -35,14 +36,19 @@ class User(AbstractUser):
         return self.username
 
 
-class Absence(models.Model):
+class Attendance(models.Model):
     absence_id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     absence_date = models.DateField()
-    absence_time = models.TimeField(auto_now_add=True, null=True)
-    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-    photo = models.ImageField(upload_to='attendance/', null=True)
+    time_in = models.DateTimeField(auto_now_add=True, null=True)
+    time_out = models.DateTimeField(null=True)
+    lat_in = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    long_in = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    lat_out = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    long_out = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    photo_in = models.ImageField(upload_to='attendance/', null=True)
+    photo_out = models.ImageField(upload_to='attendance/', null=True)
+    total_hours = models.DurationField(null=True)
     status = models.CharField(max_length=10, null=True)
     entry_date = models.DateTimeField(null=True)
     entry_by = models.CharField(max_length=50, null=True)
@@ -50,12 +56,14 @@ class Absence(models.Model):
     update_by = models.CharField(max_length=50, null=True)
 
     def save(self, *args, **kwargs):
+        if self.time_in and self.time_out:
+            self.total_hours = self.time_out - self.time_in
         if not self.entry_date:
             self.entry_date = timezone.now()
             self.entry_by = get_current_user().user_id
         self.update_date = timezone.now()
         self.update_by = get_current_user().user_id
-        super(Absence, self).save(*args, **kwargs)
+        super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username

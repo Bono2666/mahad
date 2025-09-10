@@ -1,0 +1,36 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load user_agents %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="{% if user_agents|is_mobile %}col-12{% else %}col-lg-6 col-12{% endif %}">
+            <div class="card mb-0 p-4 z-index-3">
+                <div class="row mb-3">
+                    <div class="col-12 align-items-center">
+                        <h5 class="mb-0 mt-4 text-center">Absen Pulang Berhasil!</h5>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-0">
+                    <div class="message mb-4 text-center">
+                        <p>Terima kasih telah melakukan absen pulang. Baarakallahu fiik.</p>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{% url 'home' %}" class="btn bg-primary text-white mb-0">Kembali ke Beranda</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

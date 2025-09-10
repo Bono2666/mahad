@@ -1,0 +1,168 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load user_agents %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+  <div row>
+    <div class="col-lg-9 col-12">
+      <div class="row">
+        <div class="col-12 mb-4">
+          <div class="card">
+            <div class="card-body p-3">
+              <div class="row">
+                <div class="col-12">
+                  <div class="numbers">
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">
+                      {{ tgl }}
+                    </p>
+                    <h5 class="font-weight-bolder mb-0">
+                      Absen Pulang
+                    </h5>
+                  </div>
+                </div>
+                <video id="videoElement" autoplay class="pt-3"></video>
+                <canvas id="canvasElement" class="d-none pt-3"></canvas>
+                <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+              </div>
+              <div class="mt-3">
+                <button class="btn bg-primary text-white mb-0" id="btn-absen-pulang">
+                  <i class="fas fa-camera"></i>&nbsp;&nbsp;Ambil Foto
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+  const sendUserLocation = (coords) => {
+    fetch('/submit-location/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        status: 'Pulang',
+      })
+    }).then(response => {
+      if (response.ok) {
+        window.location.href = '{% url "clock-out-success" %}';
+      }
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const outBtn = document.getElementById('btn-absen-pulang');
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('canvasElement');
+    const csrftoken = document.getElementById('csrf_token').value;
+    const isMobile = "{{ request|is_mobile }}";
+    
+    // Access the device camera and stream to video element
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+          video.srcObject = stream;
+          video.style.transform = "scaleX(-1)";
+          canvas.style.transform = "scaleX(-1)";
+          // if user is on mobile device, use front camera
+          if (isMobile == 'True') {
+            const videoTrack = stream.getVideoTracks()[0];
+            const constraints = { facingMode: "user" };
+            videoTrack.applyConstraints(constraints);
+            video.width = window.innerWidth;
+            video.height = window.innerWidth * (4/3);
+            video.style.objectFit = "cover";
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerWidth * (4/3);
+            canvas.style.objectFit = "cover";
+          }
+        })
+        .catch(function (error) {
+          console.error("Could not access the camera: ", error);
+        });
+    }
+
+    outBtn.addEventListener('click', function(event) {
+      // Capture the photo and send it to Django
+      // draw the video frame to the canvas
+      const ctx = canvas.getContext('2d');
+      // Calculate aspect ratios
+      const videoAspect = video.videoWidth / video.videoHeight;
+      const canvasAspect = canvas.width / canvas.height;
+
+      let sx, sy, sw, sh;
+      if (videoAspect > canvasAspect) {
+        // Video is wider than canvas
+        sw = video.videoHeight * canvasAspect;
+        sh = video.videoHeight;
+        sx = (video.videoWidth - sw) / 2;
+        sy = 0;
+      } else {
+        // Video is taller than canvas
+        sw = video.videoWidth;
+        sh = video.videoWidth / canvasAspect;
+        sx = 0;
+        sy = (video.videoHeight - sh) / 2;
+      }
+      ctx.scale(-1, 1); // Flip horizontally
+      ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width * -1, canvas.height);
+      // transform canvas to scaleX(-1)
+      //ctx.scale(-1, 1);
+      //ctx.drawImage(video, 0, 0, canvas.width * -1, canvas.height);
+      
+      const imageData = canvas.toDataURL('image/png');
+      const formData = new FormData();
+      formData.append('photo', imageData);
+      formData.append('status', 'Pulang');
+
+      fetch('/submit-photo/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken
+        },
+        body: formData
+      })
+      
+      // check if geolocation is available
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+              sendUserLocation(position.coords);
+          }, function(error) {
+              alert('Error obtaining location: ' + error.message);
+          }, {
+              enableHighAccuracy: true,
+              maximumAge: 0
+          }
+      );
+      } else {
+          alert('Geolocation is not supported by this browser.');
+      }
+    });
+  });
+
+  let btn_menu = document.getElementById('dropdownTable');
+  let dropdown_menu = document.getElementsByClassName('dropdown-menu');
+  
+  // open dropdown menu
+  btn_menu.addEventListener('click', function() {
+    dropdown_menu[0].classList.toggle('show');
+  });
+
+</script>
+
+{% endblock javascripts %}

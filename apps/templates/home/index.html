@@ -44,33 +44,35 @@
               </a>
             </div>
             <div class="col-lg-6 col-md-6 col-12 mt-4 mt-md-0">
-              <div class="card cursor-pointer">
-                <span class="mask bg-dark opacity-10 border-radius-lg"></span>
-                <div class="card-body p-3 position-relative">
-                  <div class="row">
-                    <div class="col-8 text-start">
-                      <div class="icon icon-shape bg-white shadow text-center border-radius-2xl pt-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 20 20">
-                          <title>arrow door out</title>
-                          <g fill="#212121" class="nc-icon-wrapper">
-                            <path d="m17,6c0-1.195-.703-2.217-1.714-2.7l-2.993,2.993c-.188.188-.293.442-.293.707v6c0,.265.105.52.293.707l2.993,2.993c1.011-.483,1.714-1.505,1.714-2.7V6Z" stroke-width="0" fill="#212121"></path>
-                            <line x1="3" y1="10" x2="9" y2="10" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></line>
-                            <path d="m7.44,15.544c.526.869,1.47,1.456,2.56,1.456h4c1.657,0,3-1.343,3-3V6c0-1.657-1.343-3-3-3h-4c-1.089,0-2.033.585-2.558,1.453" fill="none" stroke="#212121" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                            <polyline points="5.75 7.5 3 10 5.75 12.5" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></polyline>
-                          </g>
-                        </svg>
+              <a href="{% url 'clock-out' %}">
+                <div class="card cursor-pointer">
+                  <span class="mask bg-dark opacity-10 border-radius-lg"></span>
+                  <div class="card-body p-3 position-relative">
+                    <div class="row">
+                      <div class="col-8 text-start">
+                        <div class="icon icon-shape bg-white shadow text-center border-radius-2xl pt-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 20 20">
+                            <title>arrow door out</title>
+                            <g fill="#212121" class="nc-icon-wrapper">
+                              <path d="m17,6c0-1.195-.703-2.217-1.714-2.7l-2.993,2.993c-.188.188-.293.442-.293.707v6c0,.265.105.52.293.707l2.993,2.993c1.011-.483,1.714-1.505,1.714-2.7V6Z" stroke-width="0" fill="#212121"></path>
+                              <line x1="3" y1="10" x2="9" y2="10" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></line>
+                              <path d="m7.44,15.544c.526.869,1.47,1.456,2.56,1.456h4c1.657,0,3-1.343,3-3V6c0-1.657-1.343-3-3-3h-4c-1.089,0-2.033.585-2.558,1.453" fill="none" stroke="#212121" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                              <polyline points="5.75 7.5 3 10 5.75 12.5" fill="none" stroke="#8c8d8f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" data-color="color-2"></polyline>
+                            </g>
+                          </svg>
+                        </div>
+                        <h5 class="text-white font-weight-bolder mb-0 mt-3">
+                          Absen Pulang
+                        </h5>
+                        <span class="text-white text-sm">Belum Pulang</span>
                       </div>
-                      <h5 class="text-white font-weight-bolder mb-0 mt-3">
-                        Absen Pulang
-                      </h5>
-                      <span class="text-white text-sm">Belum Pulang</span>
-                    </div>
-                    <div class="col-4">
-                      <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                      <div class="col-4">
+                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
