@@ -74,13 +74,13 @@
         <div class="multi-level ms-5 collapse {% if 'attendance' in group_segment %}show{% endif %}" role="list" id="attendance-menu" aria-expanded="{% if 'attendance' in group_segment %}true{% else %}false{% endif %}">
           <ul class="flex-column nav">
             <li class="nav-item {% if segment == 'clock-in' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-in' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %}">Masuk</span>
+              <a class="nav-link button cursor-pointer {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %} {% if attendance.status == 'Masuk' or attendance.status == 'Pulang' %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-in' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'CLOCK-IN' not in role and not request.user.is_superuser %}disabled{% endif %}">Masuk {% if attendance.time_in %}<span class="badge badge-notification rounded-pill bg-gray-400 ms-2 text-black-50">{{ attendance.time_in|time:"H:i" }}</span>{% endif %}</span>
               </a>
             </li>
             <li class="nav-item {% if segment == 'clock-out' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-out' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pulang</span>
+              <a class="nav-link button cursor-pointer {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %} {% if attendance.status == 'Pulang' %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-out' %}"{% endif %}>
+                <span class="nav-link-text ms-1 {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pulang {% if attendance.time_out %}<span class="badge badge-notification rounded-pill bg-gray-400 ms-2 text-black-50">{{ attendance.time_out|time:"H:i" }}</span>{% endif %}</span>
               </a>
             </li>
           </ul>
@@ -129,7 +129,7 @@
         <div class="multi-level ms-5 collapse {% if 'report' in group_segment %}show{% endif %}" role="list" id="report-menu" aria-expanded="{% if 'report' in group_segment %}true{% else %}false{% endif %}">
           <ul class="flex-column nav">
             <li class="nav-item {% if segment == 'att-report' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'report-marbot' '0' '0' 'all' %}"{% endif %}>
+              <a class="nav-link button cursor-pointer {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'attendance-report' '0' '0' 'all' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'ATT-REPORT' not in role and not request.user.is_superuser %}disabled{% endif %}">Kehadiran</span>
               </a>
             </li>
@@ -183,16 +183,6 @@
                 <span class="nav-link-text ms-1 {% if 'USER' not in role and not request.user.is_superuser %}d-none{% endif %}">Pengguna</span>
               </a>
             </li>
-            <!-- <li class="nav-item {% if 'customer' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CUSTOMER' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'customer-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CUSTOMER' not in role and not request.user.is_superuser %}disabled{% endif %}">Pelanggan</span>
-              </a>
-            </li> -->
-            <!-- <li class="nav-item {% if 'area_sales' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'AREA' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'area-sales-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'AREA' not in role and not request.user.is_superuser %}disabled{% endif %}">Cabang</span>
-              </a>
-            </li> -->
             <li class="nav-item {% if 'position' in segment %}active{% endif %} list-unstyled">
               <a class="nav-link button cursor-pointer {% if 'POSITION' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'position-index' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'POSITION' not in role and not request.user.is_superuser %}disabled{% endif %}">Posisi</span>
@@ -203,26 +193,6 @@
                 <span class="nav-link-text ms-1 {% if 'MENU' not in role and not request.user.is_superuser %}disabled{% endif %}">Menu</span>
               </a>
             </li>
-            <!-- <li class="nav-item {% if 'room' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'ROOM' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'room-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'ROOM' not in role and not request.user.is_superuser %}disabled{% endif %}">Ruangan</span>
-              </a>
-            </li>
-            <li class="nav-item {% if 'region' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'REGION' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' and crud != 'delete' %}href="{% url 'region-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'REGION' not in role and not request.user.is_superuser %}disabled{% endif %}">Kategori</span>
-              </a>
-            </li> -->
-            <!-- <li class="nav-item {% if 'category' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CATEGORY' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'category-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'CATEGORY' not in role and not request.user.is_superuser %}disabled{% endif %}">Kategori</span>
-              </a>
-            </li>
-            <li class="nav-item {% if 'package' in segment %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'PACKAGE' not in role and not request.user.is_superuser %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'package-index' %}"{% endif %}>
-                <span class="nav-link-text ms-1 {% if 'PACKAGE' not in role and not request.user.is_superuser %}disabled{% endif %}">Paket</span>
-              </a>
-            </li> -->
           </ul>
         </div>
       </li>

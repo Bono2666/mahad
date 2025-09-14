@@ -46,25 +46,6 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script>
-  const sendUserLocation = (coords) => {
-    fetch('/submit-location/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
-      },
-      body: JSON.stringify({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        status: 'Pulang',
-      })
-    }).then(response => {
-      if (response.ok) {
-        window.location.href = '{% url "clock-out-success" %}';
-      }
-    });
-  }
-  
   document.addEventListener('DOMContentLoaded', function() {
     const outBtn = document.getElementById('btn-absen-pulang');
     const video = document.getElementById('videoElement');
@@ -121,34 +102,38 @@
       }
       ctx.scale(-1, 1); // Flip horizontally
       ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width * -1, canvas.height);
-      // transform canvas to scaleX(-1)
-      //ctx.scale(-1, 1);
-      //ctx.drawImage(video, 0, 0, canvas.width * -1, canvas.height);
       
       const imageData = canvas.toDataURL('image/png');
       const formData = new FormData();
-      formData.append('photo', imageData);
-      formData.append('status', 'Pulang');
 
-      fetch('/submit-photo/', {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': csrftoken
-        },
-        body: formData
-      })
-      
       // check if geolocation is available
       if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
-              sendUserLocation(position.coords);
+              
+              formData.append('photo', imageData);
+              formData.append('status', 'Pulang');
+              formData.append('latitude', position.coords.latitude);
+              formData.append('longitude', position.coords.longitude);
+
+              fetch('/submit-attendance/', {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': csrftoken
+                },
+                body: formData
+              }).then(response => {
+                if (response.ok) {
+                  window.location.href = '{% url "clock-out-success" %}';
+                }
+              });
+
           }, function(error) {
               alert('Error obtaining location: ' + error.message);
           }, {
               enableHighAccuracy: true,
               maximumAge: 0
           }
-      );
+        );
       } else {
           alert('Geolocation is not supported by this browser.');
       }

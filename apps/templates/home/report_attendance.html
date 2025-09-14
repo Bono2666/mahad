@@ -46,11 +46,9 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam Masuk</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jam Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Durasi Kerja</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat Masuk</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long Masuk</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lat Pulang</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Long Pulang</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Masuk</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto Masuk</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 </tr>
@@ -76,28 +74,13 @@
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.lat_in }}</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex pe-2 py-0">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ item.long_in }}</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex pe-2 py-0">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.lat_out %}{{ item.lat_out }}{% else %}-{% endif %}</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex pe-2 py-0">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.long_out %}{{ item.long_out }}{% else %}-{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">
+                                                    {% if item.lat_in and item.long_in %}
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_in }},{{ item.long_in }}" target="_blank" class="text-body">{{ item.lat_in }}, {{ item.long_in }}</a>
+                                                    {% else %}
+                                                    -
+                                                    {% endif %}
+                                                </h6>
                                             </div>
                                         </div>
                                     </td>
@@ -105,6 +88,19 @@
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">{% if item.photo_in %}<a href="{{ item.photo_in.url }}" target="_blank" class="text-body">{{ item.photo_in }}</a>{% endif %}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex pe-2 py-0">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">
+                                                    {% if item.lat_out and item.long_out %}
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_out }},{{ item.long_out }}" target="_blank" class="text-body">{{ item.lat_out }}, {{ item.long_out }}</a>
+                                                    {% else %}
+                                                    -
+                                                    {% endif %}
+                                                </h6>
                                             </div>
                                         </div>
                                     </td>
@@ -155,11 +151,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group shadow-none">
-                                    <label class="form-control-label">Ruangan</label>
-                                    <select name="room" id="room" class="form-control form-select-sm">
-                                        <option value="all">Semua Ruangan</option>
-                                        {% for room in rooms %}
-                                        <option value="{{ room.room_id }}" {% if room.room_id == selected_room %}selected{% endif %}>{{ room.room_name }}</option>
+                                    <label class="form-control-label">Pengguna</label>
+                                    <select name="user" id="user" class="form-control form-select-sm">
+                                        <option value="all">Semua Pengguna</option>
+                                        {% for user in users %}
+                                        <option value="{{ user.user_id }}" {% if user.user_id == selected_user %}selected{% endif %}>{{ user.username }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -191,7 +187,7 @@
     let toDate = '{{ toDate }}';
     let from_dt = document.getElementById('from_date');
     let to_dt = document.getElementById('to_date');
-    let room = document.getElementById('room');
+    let user = document.getElementById('user');
     let filter = document.getElementById('filter');
     let exportBtn = document.getElementById('export');
     let pop_filter = new bootstrap.Modal(document.getElementById('pop_filter'));
@@ -209,7 +205,7 @@
     });
 
     filter.addEventListener('click', function() {
-        let url = `/report/marbot/${from_dt.value}/${to_dt.value}/${room.value}`;
+        let url = `/report/attendance/${from_dt.value}/${to_dt.value}/${user.value}`;
         if (from_dt.value == '' || to_dt.value == '') {
             alert('Tanggal tidak boleh kosong');
             return;
@@ -218,7 +214,7 @@
     });
 
     exportBtn.addEventListener('click', function() {
-        let url = `/report/marbot/export/${from_dt.value}/${to_dt.value}/${room.value}`;
+        let url = `/report/attendance/export/${from_dt.value}/${to_dt.value}/${user.value}`;
         window.location.href = url;
     });
 

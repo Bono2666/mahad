@@ -13,8 +13,8 @@
             <canvas id="canvasElement" class="d-none"></canvas>
             <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
             <div class="col-lg-6 col-md-6 col-12">
-              <a href="{% url 'clock-in' %}">
-                <div class="card cursor-pointer">
+              <a {% if attendance.status == 'Masuk' or attendance.status == 'Pulang' %}{% else %}href="{% url 'clock-in' %}"{% endif %}>
+                <div class="card {% if attendance.status == 'Masuk' or attendance.status == 'Pulang' %}cursor-not-allowed{% else %}cursor-pointer{% endif %}">
                   <span class="mask bg-primary opacity-10 border-radius-lg"></span>
                   <div class="card-body p-3 position-relative">
                     <div class="row">
@@ -33,10 +33,10 @@
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
                           Absen Masuk
                         </h5>
-                        <span class="text-white text-sm">Belum Masuk</span>
+                        <span class="text-white text-sm">{% if attendance.time_in %}Sudah Absen{% else %}Belum Absen{% endif %}</span>
                       </div>
                       <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">{% if attendance.time_in %}{{ attendance.time_in|time:"H:i" }}{% endif %}
                       </div>
                     </div>
                   </div>
@@ -44,8 +44,8 @@
               </a>
             </div>
             <div class="col-lg-6 col-md-6 col-12 mt-4 mt-md-0">
-              <a href="{% url 'clock-out' %}">
-                <div class="card cursor-pointer">
+              <a {% if attendance.status == 'Pulang' %}{% else %}href="{% url 'clock-out' %}"{% endif %}>
+                <div class="card {% if attendance.status == 'Pulang' %}cursor-not-allowed{% else %}cursor-pointer{% endif %}">
                   <span class="mask bg-dark opacity-10 border-radius-lg"></span>
                   <div class="card-body p-3 position-relative">
                     <div class="row">
@@ -64,10 +64,10 @@
                         <h5 class="text-white font-weight-bolder mb-0 mt-3">
                           Absen Pulang
                         </h5>
-                        <span class="text-white text-sm">Belum Pulang</span>
+                        <span class="text-white text-sm">{% if attendance.status == 'Pulang' %}Sudah Absen{% else %}Belum Absen{% endif %}</span>
                       </div>
                       <div class="col-4">
-                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"></p>
+                        <p class="text-white text-sm text-end font-weight-bolder mt-auto mb-0">{% if attendance.status == 'Pulang' %}{{ attendance.time_out|time:"H:i" }}{% endif %}
                       </div>
                     </div>
                   </div>

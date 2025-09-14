@@ -41,33 +41,8 @@ from django.db.models import Prefetch
 
 @login_required(login_url='/login/')
 def home(request):
-    rooms = Checklist.objects.filter(
-        checklist_date=datetime.date.today()).values('room__room_name', 'janitor').distinct().annotate(
-            total=Count('room__room_name'), done=(Count('checklist_status', filter=Q(checklist_status='Selesai'))/Count('checklist_status'))*100).order_by('room__room_name')
-    checklists = Checklist.objects.filter(checklist_date=datetime.date.today())
-    not_done = Checklist.objects.filter(
-        checklist_date=datetime.date.today(), checklist_status='Belum Dikerjakan').count()
-    not_done_percentage = not_done / \
-        len(list(checklists)) if len(list(checklists)) > 0 else 0
-    in_progress = Checklist.objects.filter(
-        checklist_date=datetime.date.today(), checklist_status='Sedang Dikerjakan').count()
-    in_progress_percentage = in_progress / \
-        len(list(checklists)) if len(list(checklists)) > 0 else 0
-    done = Checklist.objects.filter(
-        checklist_date=datetime.date.today(), checklist_status='Selesai').count()
-    done_percentage = done / \
-        len(list(checklists)) if len(list(checklists)) > 0 else 0
     context = {
-        'rooms': rooms,
-        'checklist': len(list(checklists)) if checklists else 0,
-        'not_done': not_done,
-        'not_done_percentage': not_done_percentage*100,
-        'in_progress': in_progress,
-        'in_progress_percentage': in_progress_percentage*100,
-        'done': done,
-        'done_percentage': done_percentage*100,
-        'checklist_notif': checklist_notification(request),
-        'urgent_notif': urgent_notification(request),
+        'attendance': attendance(request),
         'segment': 'index',
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
     }
@@ -84,6 +59,7 @@ def user_index(request):
 
     context = {
         'data': users,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'user',
@@ -118,6 +94,7 @@ def user_add(request):
             context = {
                 'form': form,
                 'position': position,
+                'attendance': attendance(request),
                 'checklist_notif': checklist_notification(request),
                 'urgent_notif': urgent_notification(request),
                 'segment': 'user',
@@ -133,6 +110,7 @@ def user_add(request):
         context = {
             'form': form,
             'position': position,
+            'attendance': attendance(request),
             'checklist_notif': checklist_notification(request),
             'urgent_notif': urgent_notification(request),
             'segment': 'user',
@@ -185,6 +163,7 @@ def user_view(request, _id):
         'area': area,
         'item_area': item_area,
         'positions': position,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'user',
@@ -324,6 +303,7 @@ def user_update(request, _id):
         'positions': position,
         'auth': auth,
         'area': area,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'user',
@@ -364,6 +344,7 @@ def change_password(request):
         'data': request.user,
         'crud': 'update',
         'message': message,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
@@ -388,6 +369,7 @@ def set_password(request, _id):
     context = {
         'form': form,
         'data': users,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'user',
@@ -682,6 +664,7 @@ def position_index(request):
 
     context = {
         'data': positions,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'position',
@@ -712,6 +695,7 @@ def position_update(request, _id):
     context = {
         'form': form,
         'data': positions,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'position',
@@ -743,6 +727,7 @@ def position_view(request, _id):
     context = {
         'form': form,
         'data': positions,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'position',
@@ -766,6 +751,7 @@ def menu_add(request):
             message = form.errors
             context = {
                 'form': form,
+                'attendance': attendance(request),
                 'checklist_notif': checklist_notification(request),
                 'urgent_notif': urgent_notification(request),
                 'segment': 'menu',
@@ -780,6 +766,7 @@ def menu_add(request):
         form = FormMenu()
         context = {
             'form': form,
+            'attendance': attendance(request),
             'checklist_notif': checklist_notification(request),
             'urgent_notif': urgent_notification(request),
             'segment': 'menu',
@@ -800,6 +787,7 @@ def menu_index(request):
 
     context = {
         'data': menus,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'menu',
@@ -829,6 +817,7 @@ def menu_update(request, _id):
     context = {
         'form': form,
         'data': menus,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'menu',
@@ -860,6 +849,7 @@ def menu_view(request, _id):
     context = {
         'form': form,
         'data': menus,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
         'segment': 'menu',
@@ -1170,20 +1160,26 @@ def equipment_index(request):
 
 
 @login_required(login_url='/login/')
-@role_required(allowed_roles='REPORT')
-def report_marbot(request, _from_date, _to_date, _room):
+@role_required(allowed_roles='ATT-REPORT')
+def attendance_report(request, _from_date, _to_date, _user):
     from_date = datetime.datetime.strptime(
         _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
     to_date = datetime.datetime.strptime(
         _to_date, '%Y-%m-%d').date() if _to_date != '0' else datetime.date.today()
-    rooms = User.objects.all()
+    users = User.objects.all()
 
-    if _room == 'all':
+    if _user == 'all':
         checklists = Attendance.objects.filter(
             absence_date__gte=from_date, absence_date__lte=to_date)
     else:
         checklists = Attendance.objects.filter(
-            user_id=_room, absence_date__gte=from_date, absence_date__lte=to_date)
+            user_id=_user, absence_date__gte=from_date, absence_date__lte=to_date)
+
+    for att in checklists:
+        att.lat_in = '{:.7f}'.format(att.lat_in) if att.lat_in else 0
+        att.long_in = '{:.7f}'.format(att.long_in) if att.long_in else 0
+        att.lat_out = '{:.7f}'.format(att.lat_out) if att.lat_out else 0
+        att.long_out = '{:.7f}'.format(att.long_out) if att.long_out else 0
 
     context = {
         'data': checklists,
@@ -1191,17 +1187,18 @@ def report_marbot(request, _from_date, _to_date, _room):
         'to_date': to_date,
         'fromDate': _from_date,
         'toDate': _to_date,
-        'selected_room': _room,
-        'rooms': rooms,
+        'selected_user': _user,
+        'users': users,
+        'attendance': attendance(request),
         'checklist_notif': checklist_notification(request),
         'urgent_notif': urgent_notification(request),
-        'segment': 'report_marbot',
+        'segment': 'att-report',
         'group_segment': 'report',
         'crud': 'index',
         'role': Auth.objects.filter(user_id=request.user.user_id).values_list('menu_id', flat=True),
-        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='REPORT') if not request.user.is_superuser else Auth.objects.all(),
+        'btn': Auth.objects.get(user_id=request.user.user_id, menu_id='ATT-REPORT') if not request.user.is_superuser else Auth.objects.all(),
     }
-    return render(request, 'home/report_marbot.html', context)
+    return render(request, 'home/report_attendance.html', context)
 
 
 @login_required(login_url='/login/')
@@ -3882,6 +3879,7 @@ def clock_in(request):
         ' ' + datetime.datetime.now().strftime('%Y')
 
     context = {
+        'attendance': attendance(request),
         'tgl': tgl,
         'segment': 'clock-in',
         'group_segment': 'attendance',
@@ -3904,6 +3902,7 @@ def clock_out(request):
         ' ' + datetime.datetime.now().strftime('%Y')
 
     context = {
+        'attendance': attendance(request),
         'tgl': tgl,
         'segment': 'clock-out',
         'group_segment': 'attendance',
@@ -3915,8 +3914,7 @@ def clock_out(request):
 
 
 @login_required(login_url='/login/')
-@role_required(allowed_roles='ABSENSI')
-def submit_photo(request):
+def submit_attendance(request):
     if request.POST:
         if request.POST.get('photo'):
             # save photo
@@ -3930,25 +3928,29 @@ def submit_photo(request):
                 f.write(img_data)
 
             if request.POST.get('status') == 'Masuk':
+                print(request.POST.get('latitude'), request.POST.get('longitude'),
+                      request.POST.get('status'))
                 Attendance.objects.update_or_create(
                     user_id=request.user.user_id,
                     absence_date=datetime.date.today(),
                     defaults={
                         'time_in': datetime.datetime.now(),
+                        'lat_in': request.POST.get('latitude'),
+                        'long_in': request.POST.get('longitude'),
                         'photo_in': 'attendance/' + filename,
                         'status': request.POST.get('status'),
                     }
                 )
             else:
-                Attendance.objects.update_or_create(
-                    user_id=request.user.user_id,
-                    absence_date=datetime.date.today(),
-                    defaults={
-                        'time_out': datetime.datetime.now(),
-                        'photo_out': 'attendance/' + filename,
-                        'status': request.POST.get('status'),
-                    }
-                )
+                attendance = Attendance.objects.get(
+                    user_id=request.user.user_id, absence_date=datetime.date.today())
+                attendance.time_out = datetime.datetime.now()
+                attendance.lat_out = request.POST.get('latitude')
+                attendance.long_out = request.POST.get('longitude')
+                attendance.photo_out = 'attendance/' + filename
+                attendance.status = request.POST.get('status')
+                attendance.save()
+                print(attendance.photo_out)
 
         if not settings.DEBUG and request.POST.get('photo'):
             my_file = request.POST['photo']
@@ -3960,44 +3962,6 @@ def submit_photo(request):
         return HttpResponseRedirect(reverse('home'))
 
     return render(request, 'home/home.html')
-
-
-@login_required(login_url='/login/')
-@role_required(allowed_roles='ABSENSI')
-def submit_location(request):
-    try:
-        data = json.loads(request.body)
-        lat = data.get('latitude')
-        lon = data.get('longitude')
-        status = data.get('status')
-
-        if not all([lat, lon]):
-            return JsonResponse({'status': 'error', 'message': 'Invalid coordinates'}, status=400)
-
-        attendance = Attendance.objects.get(
-            user_id=request.user.user_id, absence_date=datetime.date.today()) if Attendance.objects.get(
-            user_id=request.user.user_id, absence_date=datetime.date.today()) else None
-
-        if attendance:
-            if status == 'Masuk':
-                attendance.time_in = datetime.datetime.now()
-                attendance.lat_in = lat
-                attendance.long_in = lon
-                attendance.status = status
-                attendance.save()
-            else:
-                attendance.time_out = datetime.datetime.now()
-                attendance.lat_out = lat
-                attendance.long_out = lon
-                attendance.status = status
-                attendance.save()
-
-        return HttpResponseRedirect(reverse('home'))
-
-    except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
 @login_required(login_url='/login/')
