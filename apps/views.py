@@ -57,6 +57,27 @@ def user_add(request):
         form = FormUser(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            # format, imgstr = form.instance.signature.split(';base64,')
+            # ext = format.split('/')[-1]
+            # img_data = base64.b64decode(imgstr)
+            # filename = f"{request.user.user_id}_sign_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
+            # file_path = os.path.join(
+            #     settings.MEDIA_ROOT + '/signature/', filename)
+            # with open(file_path, 'wb') as f:
+            #     f.write(img_data)
+
+            if settings.DEBUG and form.instance.signature:
+                # save to media
+                user = User.objects.get(user_id=form.instance.user_id)
+                my_file = user.signature
+                filename = my_file.name
+                format, imgstr = my_file.read().decode().split(';base64,')
+                img_data = base64.b64decode(imgstr)
+                file_path = '../../www/mahad/apps/media/' + 'signature/' + filename
+                with open(file_path, 'wb+') as f:
+                    for chunk in img_data:
+                        f.write(chunk)
+
             # if not settings.DEBUG and form.instance.signature:
             #     user = User.objects.get(user_id=form.instance.user_id)
             #     my_file = user.signature
@@ -725,6 +746,12 @@ def submit_attendance(request):
             with open(file_path, 'wb') as f:
                 f.write(img_data)
 
+            if not settings.DEBUG:
+                # save to media
+                file_path = '../../www/mahad/apps/media/' + 'attendance/' + filename
+                with open(file_path, 'wb') as f:
+                    f.write(img_data)
+
             if request.POST.get('status') == 'Masuk':
                 print(request.POST.get('latitude'), request.POST.get('longitude'),
                       request.POST.get('status'))
@@ -748,13 +775,6 @@ def submit_attendance(request):
                 attendance.photo_out = 'attendance/' + filename
                 attendance.status = request.POST.get('status')
                 attendance.save()
-                print(attendance.photo_out)
-
-            if not settings.DEBUG and request.POST.get('photo'):
-                filename = '../../www/mahad/apps/media/' + 'attendance/' + filename
-                with open(filename, 'wb+') as temp_file:
-                    for chunk in img_data:
-                        temp_file.write(chunk)
 
         return HttpResponseRedirect(reverse('home'))
 
