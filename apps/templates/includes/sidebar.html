@@ -79,7 +79,7 @@
               </a>
             </li>
             <li class="nav-item {% if segment == 'clock-out' %}active{% endif %} list-unstyled">
-              <a class="nav-link button cursor-pointer {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %} {% if attendance.status == 'Pulang' %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-out' %}"{% endif %}>
+              <a class="nav-link button cursor-pointer {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %} {% if attendance.status == 'Pulang' or not attendance %}disabled{% endif %}" {% if crud != 'add' and crud != 'update' %}href="{% url 'clock-out' %}"{% endif %}>
                 <span class="nav-link-text ms-1 {% if 'CLOCK-OUT' not in role and not request.user.is_superuser %}disabled{% endif %}">Pulang {% if attendance.time_out %}<span class="badge badge-notification rounded-pill bg-gray-400 ms-2 text-black-50">{{ attendance.time_out|time:"H:i" }}</span>{% endif %}</span>
               </a>
             </li>

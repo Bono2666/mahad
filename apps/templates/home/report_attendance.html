@@ -76,7 +76,7 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
                                                     {% if item.lat_in and item.long_in %}
-                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_in }},{{ item.long_in }}" target="_blank" class="text-body">{{ item.lat_in }}, {{ item.long_in }}</a>
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_in }},{{ item.long_in }}" target="_blank" class="text-body">Lihat Lokasi</a>
                                                     {% else %}
                                                     -
                                                     {% endif %}
@@ -87,7 +87,7 @@
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.photo_in %}<a href="{{ item.photo_in.url }}" target="_blank" class="text-body">{{ item.photo_in }}</a>{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">{% if item.photo_in %}<a href="{{ item.photo_in.url }}" target="_blank" class="text-body">Lihat Foto</a>{% else %}-{% endif %}</h6>
                                             </div>
                                         </div>
                                     </td>
@@ -96,7 +96,7 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
                                                     {% if item.lat_out and item.long_out %}
-                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_out }},{{ item.long_out }}" target="_blank" class="text-body">{{ item.lat_out }}, {{ item.long_out }}</a>
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_out }},{{ item.long_out }}" target="_blank" class="text-body">Lihat Lokasi</a>
                                                     {% else %}
                                                     -
                                                     {% endif %}
@@ -107,7 +107,7 @@
                                     <td>
                                         <div class="d-flex pe-2 py-0">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{% if item.photo_out %}<a href="{{ item.photo_out.url }}" target="_blank" class="text-body">{{ item.photo_out }}</a>{% else %}-{% endif %}</h6>
+                                                <h6 class="mb-0 text-sm">{% if item.photo_out %}<a href="{{ item.photo_out.url }}" target="_blank" class="text-body">Lihat Foto</a>{% else %}-{% endif %}</h6>
                                             </div>
                                         </div>
                                     </td>
@@ -251,7 +251,7 @@
         } else {
             $('#checklistTable').DataTable({
                 "order": [[ 0, "asc" ]],
-                "scrollX": true,
+                "scrollX": false,
                 "scrollCollapse": true,
                 "lengthChange": false,
                 "scrollY": "60vh",
