@@ -17,9 +17,10 @@ from django.utils import timezone
 import xlwt
 from django.http import HttpResponse
 import xlsxwriter
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F, Value, CharField
 from django.db.models import Max
 from django.db.models import Min
+from django.db.models.functions import Concat, Cast
 from . import host
 from reportlab.pdfgen import canvas
 from django.http import FileResponse
@@ -1161,7 +1162,7 @@ def equipment_index(request):
 
 @login_required(login_url='/login/')
 @role_required(allowed_roles='ATT-REPORT')
-def attendance_report(request, _from_date, _to_date, _user):
+def report_attendance(request, _from_date, _to_date, _user):
     from_date = datetime.datetime.strptime(
         _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
     to_date = datetime.datetime.strptime(
@@ -1169,20 +1170,20 @@ def attendance_report(request, _from_date, _to_date, _user):
     users = User.objects.all()
 
     if _user == 'all':
-        checklists = Attendance.objects.filter(
+        attendances = Attendance.objects.filter(
             absence_date__gte=from_date, absence_date__lte=to_date)
     else:
-        checklists = Attendance.objects.filter(
+        attendances = Attendance.objects.filter(
             user_id=_user, absence_date__gte=from_date, absence_date__lte=to_date)
 
-    for att in checklists:
+    for att in attendances:
         att.lat_in = '{:.7f}'.format(att.lat_in) if att.lat_in else 0
         att.long_in = '{:.7f}'.format(att.long_in) if att.long_in else 0
         att.lat_out = '{:.7f}'.format(att.lat_out) if att.lat_out else 0
         att.long_out = '{:.7f}'.format(att.long_out) if att.long_out else 0
 
     context = {
-        'data': checklists,
+        'data': attendances,
         'from_date': from_date,
         'to_date': to_date,
         'fromDate': _from_date,
@@ -1247,26 +1248,44 @@ def report_urgent_detail(request, _id):
 
 
 @login_required(login_url='/login/')
-@role_required(allowed_roles='REPORT')
-def report_marbot_toxl(request, _from_date, _to_date, _room):
+@role_required(allowed_roles='ATT-REPORT')
+def report_attendance_toxl(request, _from_date, _to_date, _user):
     from_date = datetime.datetime.strptime(
         _from_date, '%Y-%m-%d').date() if _from_date != '0' else datetime.date.today()
     to_date = datetime.datetime.strptime(
         _to_date, '%Y-%m-%d').date() if _to_date != '0' else datetime.date.today()
 
-    if _room == 'all':
-        checklists = Checklist.objects.filter(
-            checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor', 'checklist_status', 'checklist_duration', 'checklist_by', 'checklist_remark', 'checklist_attachment')
+    if _user == 'all':
+        attendance = Attendance.objects.filter(
+            absence_date__gte=from_date, absence_date__lte=to_date).annotate(
+            lokasi_masuk=Concat(Value('https://www.google.com/maps/search/?api=1&query='), Cast('lat_in', CharField()), Value(
+                ','), Cast('long_in', CharField()), output_field=CharField()),
+            lokasi_pulang=Concat(Value('https://www.google.com/maps/search/?api=1&query='), Cast('lat_out', CharField()), Value(
+                ','), Cast('long_out', CharField()), output_field=CharField()),
+            pho_in=Concat(Value(host.url + 'apps/media/'),
+                          'photo_in', output_field=CharField()),
+            pho_out=Concat(Value(host.url + 'apps/media/'),
+                           'photo_out', output_field=CharField())
+        ).values_list(
+            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'pho_in', 'lokasi_pulang', 'pho_out', 'status'
+        )
     else:
-        checklists = Checklist.objects.filter(
-            room_id=_room, checklist_date__gte=from_date, checklist_date__lte=to_date).values_list('room__room_name', 'checklist_date', 'task__task_name', 'janitor', 'checklist_status', 'checklist_duration', 'checklist_by', 'checklist_remark', 'checklist_attachment')
+        attendance = Attendance.objects.filter(
+            user_id=_user, absence_date__gte=from_date, absence_date__lte=to_date).annotate(
+            lokasi_masuk=Concat(Value('https://www.google.com/maps/search/?api=1&query='), Cast('lat_in', CharField()), Value(
+                ','), Cast('long_in', CharField()), output_field=CharField()),
+            lokasi_pulang=Concat(Value('https://www.google.com/maps/search/?api=1&query='), Cast('lat_out', CharField()), Value(
+                ','), Cast('long_out', CharField()), output_field=CharField())
+        ).values_list(
+            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'photo_in', 'lokasi_pulang', 'photo_out', 'status'
+        )
 
     # Create a HttpResponse object with the csv data
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    filename = 'laporan_marbot_' + \
+    filename = 'laporan_kehadiran_' + \
         _from_date + '_' + '_to_' + _to_date + '_' + \
-        '_room_' + _room + '.xlsx'
+        '_user_' + _user + '.xlsx'
     response['Content-Disposition'] = 'attachment; filename=' + filename
 
     # Create an XlsxWriter workbook object and add a worksheet.
@@ -1274,8 +1293,8 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
     worksheet = workbook.add_worksheet()
 
     # Define column headers
-    headers = ['Ruangan', 'Tanggal', 'Tugas', 'Petugas',
-               'Status', 'Durasi', 'Dikerjakan Oleh', 'Catatan', 'Foto']
+    headers = ['Nama', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Durasi Kerja', 'Lokasi Masuk', 'Foto Masuk',
+               'Lokasi Pulang', 'Foto Pulang', 'Status']
 
     # Define cell formats
     header_format = workbook.add_format({
@@ -1288,6 +1307,8 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
     cell_format = workbook.add_format({'border': 1})
     date_format = workbook.add_format(
         {'border': 1, 'num_format': 'dd-mmm-yyyy', 'align': 'left'})
+    time_format = workbook.add_format(
+        {'border': 1, 'num_format': 'hh:mm', 'align': 'left'})
     date_back_format = workbook.add_format(
         {'border': 1, 'num_format': 'dd-mmm-yyyy', 'bg_color': '#a5d223', 'align': 'left'})
     num_format = workbook.add_format({'border': 1, 'num_format': '#,##0'})
@@ -1299,15 +1320,12 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
     # Set column width
     worksheet.set_column('A:A', 25)
     worksheet.set_column('B:B', 12)
-    worksheet.set_column('C:C', 25)
-    worksheet.set_column('D:D', 12)
-    worksheet.set_column('E:E', 16)
-    worksheet.set_column('F:F', 12)
-    worksheet.set_column('G:G', 15)
-    worksheet.set_column('H:I', 25)
+    worksheet.set_column('C:E', 10)
+    worksheet.set_column('F:I', 30)
+    worksheet.set_column('J:J', 10)
 
     # Write data to XlsxWriter Object
-    for idx, record in enumerate(checklists):
+    for idx, record in enumerate(attendance):
         for col_idx, col_value in enumerate(record):
             if idx == 0:
                 # Write the column headers on the first row
@@ -1315,20 +1333,12 @@ def report_marbot_toxl(request, _from_date, _to_date, _room):
             # Write the data rows
             if col_idx == 1:
                 worksheet.write(idx + 1, col_idx, col_value, date_format)
+            elif col_idx == 2:
+                worksheet.write(idx + 1, col_idx, col_value, time_format)
+            elif col_idx == 3:
+                worksheet.write(idx + 1, col_idx, col_value, time_format)
             elif col_idx == 4:
-                if col_value == 'Selesai':
-                    worksheet.write(idx + 1, col_idx, col_value, back_format)
-                elif col_value == 'Sedang Dikerjakan':
-                    worksheet.write(idx + 1, col_idx,
-                                    col_value, process_format)
-                else:
-                    worksheet.write(idx + 1, col_idx, col_value, cell_format)
-            elif col_idx == 5:
-                if record[4] == 'Selesai':
-                    worksheet.write(idx + 1, col_idx,
-                                    str(col_value) + ' menit', back_format)
-                else:
-                    worksheet.write(idx + 1, col_idx, '', cell_format)
+                worksheet.write(idx + 1, col_idx, col_value, time_format)
             else:
                 worksheet.write(idx + 1, col_idx, col_value, cell_format)
 
@@ -1713,7 +1723,7 @@ def closing_add(request):
         ).year, datetime.datetime.now().month, 1) - datetime.timedelta(days=1)).year
 
         form = FormClosing(initial={'year_closed': last_year, 'month_closed': last_month,
-                           'year_open': datetime.datetime.now().year, 'month_open': datetime.datetime.now().month})
+                                    'year_open': datetime.datetime.now().year, 'month_open': datetime.datetime.now().month})
 
     context = {
         'form': form,
@@ -1982,10 +1992,13 @@ def claim_add(request, _area, _distributor, _program):
     else:
         format_no = '{:04d}'.format(_no.seq_number + 1)
 
-    _id = 'CBS-4' + format_no + '/' + program.proposal.channel + '/' + selected_area + '/' + \
-        program.proposal.budget.budget_distributor.distributor_id + '/' + \
-        datetime.datetime.now().strftime('%m/%Y') if selected_program != '0' else 'CBS-4' + format_no + '/' + selected_area + '/0' + \
-        '/' + datetime.datetime.now().strftime('%m/%Y')
+    _id = (
+        'CBS-4' + format_no + '/' + program.proposal.channel + '/' + selected_area + '/' +
+        program.proposal.budget.budget_distributor.distributor_id + '/' +
+        datetime.datetime.now().strftime('%m/%Y')
+        if selected_program != '0'
+        else 'CBS-4' + format_no + '/' + selected_area + '/0/' + datetime.datetime.now().strftime('%m/%Y')
+    )
 
     if request.POST:
         form = FormClaim(request.POST, request.FILES)
@@ -2071,9 +2084,9 @@ def claim_add(request, _area, _distributor, _program):
                         approver = cursor.fetchone()
 
                     subject = 'Claim Approval'
-                    msg = 'Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' + \
-                        'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' + \
-                        '\n\nThank you.'
+                    msg = ('Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' +
+                           'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' +
+                           '\n\nThank you.')
                     send_email(subject, msg, [email[0]])
 
                     # update mail sent to true
@@ -2169,8 +2182,8 @@ def claim_update(request, _tab, _id):
 
     if request.POST:
         form = FormClaimUpdate(request.POST, request.FILES, instance=claim)
-        difference = int(request.POST.get('amount')) - \
-            (int(proposal.balance) + int(claim.amount))
+        difference = (int(request.POST.get('amount')) -
+                      (int(proposal.balance) + int(claim.amount)))
         if int(request.POST.get('amount')) > (int(program.proposal.balance) + int(claim.amount)) and request.POST.get('additional_proposal') == '':
             add_prop = '1'
             message = 'Claim amount is greater than proposal balance.'
@@ -2241,9 +2254,9 @@ def claim_update(request, _tab, _id):
                         approver = cursor.fetchone()
 
                     subject = 'Claim Approval'
-                    msg = 'Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' + \
-                        'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' + \
-                        '\n\nThank you.'
+                    msg = ('Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' +
+                           'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' +
+                           '\n\nThank you.')
                     send_email(subject, msg, [email[0]])
 
                     # update mail sent to true
@@ -2391,8 +2404,8 @@ def claim_release_update(request, _id):
     if request.POST:
         form = FormClaimUpdate(
             request.POST, request.FILES, instance=claim)
-        difference = int(request.POST.get('amount')) - \
-            (int(proposal.balance) + int(claim.amount))
+        difference = (int(request.POST.get('amount')) -
+                      (int(proposal.balance) + int(claim.amount)))
         if int(request.POST.get('amount')) > (int(proposal.balance) + int(claim.amount)) and request.POST.get('additional_proposal') == '':
             add_prop = '1'
             message = 'Claim amount is greater than proposal balance.'
@@ -2488,66 +2501,66 @@ def claim_release_update(request, _id):
                         recipients.append(mail[1])
 
                 subject = 'Claim Revised'
-                msg = 'Dear All,\n\nThe following is revised claim for Claim No. ' + \
-                    str(_id) + ':\n'
+                msg = ('Dear All,\n\nThe following is revised claim for Claim No. ' +
+                       str(_id) + ':\n')
                 if invoice:
                     msg += '\nBEFORE\n'
                     msg += 'Invoice: ' + str(invoice) + '\n'
                     msg += '\nAFTER\n'
-                    msg += 'Invoice: ' + \
-                        form.cleaned_data['invoice'] + '\n'
+                    msg += ('Invoice: ' +
+                            form.cleaned_data['invoice'] + '\n')
 
                 if invoice_date:
                     msg += '\nBEFORE\n'
-                    msg += 'Invoice Date: ' + \
-                        invoice_date.strftime('%d %b %Y') + '\n'
+                    msg += ('Invoice Date: ' +
+                            invoice_date.strftime('%d %b %Y') + '\n')
                     msg += '\nAFTER\n'
-                    msg += 'Invoice Date: ' + \
-                        form.cleaned_data['invoice_date'].strftime(
-                            '%d %b %Y') + '\n'
+                    msg += ('Invoice Date: ' +
+                            form.cleaned_data['invoice_date'].strftime(
+                                '%d %b %Y') + '\n')
 
                 if due_date:
                     msg += '\nBEFORE\n'
-                    msg += 'Due Date: ' + \
-                        due_date.strftime('%d %b %Y') + '\n'
+                    msg += ('Due Date: ' +
+                            due_date.strftime('%d %b %Y') + '\n')
                     msg += '\nAFTER\n'
-                    msg += 'Due Date: ' + \
-                        form.cleaned_data['due_date'].strftime(
-                            '%d %b %Y') + '\n'
+                    msg += ('Due Date: ' +
+                            form.cleaned_data['due_date'].strftime(
+                                '%d %b %Y') + '\n')
 
                 if claim_amount:
                     msg += '\nBEFORE\n'
                     msg += 'Amount: ' + str(claim_amount) + '\n'
                     msg += '\nAFTER\n'
-                    msg += 'Amount: ' + \
-                        str(form.cleaned_data['amount']) + '\n'
+                    msg += ('Amount: ' +
+                            str(form.cleaned_data['amount']) + '\n')
 
                 if remarks:
                     msg += '\nBEFORE\n'
                     msg += 'Remarks: ' + str(remarks) + '\n'
                     msg += '\nAFTER\n'
-                    msg += 'Remarks: ' + \
-                        form.cleaned_data['remarks'] + '\n'
+                    msg += ('Remarks: ' +
+                            form.cleaned_data['remarks'] + '\n')
 
                 if additional_proposal:
                     msg += '\nBEFORE\n'
-                    msg += 'Additional Proposal: ' + \
-                        str(additional_proposal) + '\n'
+                    msg += ('Additional Proposal: ' +
+                            str(additional_proposal) + '\n')
                     msg += '\nAFTER\n'
-                    msg += 'Additional Proposal: ' + \
-                        request.POST.get('additional_proposal') + '\n'
+                    msg += ('Additional Proposal: ' +
+                            request.POST.get('additional_proposal') + '\n')
 
                 if add_amount:
                     msg += '\nBEFORE\n'
-                    msg += 'Additional Amount: ' + \
-                        str(add_amount) + '\n'
+                    msg += ('Additional Amount: ' +
+                            str(add_amount) + '\n')
                     msg += '\nAFTER\n'
-                    msg += 'Additional Amount: ' + \
-                        request.POST.get('additional_amount') + '\n'
+                    msg += ('Additional Amount: ' +
+                            request.POST.get('additional_amount') + '\n')
 
-                msg += '\nNote: ' + \
-                    str(release.revise_note) + '\n\nClick the following link to view the claim.\n' + host.url + 'claim/view/inapproval/' + str(_id) + '/' + \
-                    '\n\nThank you.'
+                msg += ('\nNote: ' +
+                        str(release.revise_note) + '\n\nClick the following link to view the claim.\n' + host.url + 'claim/view/inapproval/' + str(_id) + '/' +
+                        '\n\nThank you.')
 
                 recipient_list = list(dict.fromkeys(recipients))
                 send_email(subject, msg, recipient_list)
@@ -2613,8 +2626,8 @@ def claim_release_approve(request, _id):
             recipients.append(i.claim_approval_email)
 
         subject = 'Claim Approved'
-        msg = 'Dear All,\n\nClaim No. ' + str(_id) + ' has been approved.\n\nClick the following link to view the claim.\n' + host.url + 'claim/view/open/' + str(_id) + \
-            '\n\nThank you.'
+        msg = ('Dear All,\n\nClaim No. ' + str(_id) + ' has been approved.\n\nClick the following link to view the claim.\n' + host.url + 'claim/view/open/' + str(_id) +
+               '\n\nThank you.')
         recipient_list = list(dict.fromkeys(recipients))
         send_email(subject, msg, recipient_list)
     else:
@@ -2628,9 +2641,9 @@ def claim_release_approve(request, _id):
             approver = cursor.fetchone()
 
         subject = 'Claim Approval'
-        msg = 'Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' + \
-            'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' + \
-            '\n\nThank you.'
+        msg = ('Dear ' + approver[0] + ',\n\nYou have a new claim to approve. Please check your claim release list.\n\n' +
+               'Click this link to approve, revise, return or reject this claim.\n' + host.url + 'claim_release/view/' + str(_id) + '/0/' +
+               '\n\nThank you.')
         send_email(subject, msg, [email[0]])
 
     claim.save()
@@ -2685,19 +2698,19 @@ def claim_release_return(request, _id):
     note.save()
 
     subject = 'Claim Returned'
-    msg = 'Dear All,\n\nClaim No. ' + str(_id) + ' has been returned.\n\nNote: ' + \
-        str(note.return_note) + \
-        '\n\nClick the following link to revise the claim.\n'
+    msg = ('Dear All,\n\nClaim No. ' + str(_id) + ' has been returned.\n\nNote: ' +
+           str(note.return_note) +
+           '\n\nClick the following link to revise the claim.\n')
 
     if draft:
         claim = Claim.objects.get(claim_id=_id)
         claim.status = 'DRAFT'
         claim.save()
-        msg += host.url + 'claim/view/pending/' + str(_id) + \
-            '\n\nThank you.'
+        msg += (host.url + 'claim/view/pending/' + str(_id) +
+                '\n\nThank you.')
     else:
-        msg += host.url + 'claim_release/view/' + \
-            str(_id) + '/0/\n\nThank you.'
+        msg += (host.url + 'claim_release/view/' +
+                str(_id) + '/0/\n\nThank you.')
     recipient_list = list(dict.fromkeys(recipients))
     send_email(subject, msg, recipient_list)
 
@@ -2739,9 +2752,9 @@ def claim_release_reject(request, _id):
     note.save()
 
     subject = 'Claim Rejected'
-    msg = 'Dear All,\n\nClaim No. ' + str(_id) + ' has been rejected.\n\nNote: ' + \
-        str(note.reject_note) + \
-        '\n\nClick the following link to see the claim.\n'
+    msg = ('Dear All,\n\nClaim No. ' + str(_id) + ' has been rejected.\n\nNote: ' +
+           str(note.reject_note) +
+           '\n\nClick the following link to see the claim.\n')
 
     claim = Claim.objects.get(claim_id=_id)
     claim.status = 'REJECTED'
@@ -2778,8 +2791,8 @@ def claim_release_reject(request, _id):
         proposal2.balance = proposal2.total_cost - proposal2.proposal_claim
         proposal2.save()
 
-    msg += host.url + 'claim/view/reject/' + str(_id) + \
-        '\n\nThank you.'
+    msg += (host.url + 'claim/view/reject/' + str(_id) +
+            '\n\nThank you.')
     recipient_list = list(dict.fromkeys(recipients))
     send_email(subject, msg, recipient_list)
 
@@ -2933,8 +2946,8 @@ def claim_print(request, _id):
                   col_width * verificator_count, 15, stroke=True)
     title = 'Verified By' if verificator_count > 0 else ''
     title_width = pdf_file.stringWidth(title, "Helvetica", 8)
-    title_x = 25 + col_width + \
-        ((col_width * verificator_count) - title_width) / 2
+    title_x = (25 + col_width +
+               ((col_width * verificator_count) - title_width) / 2)
     pdf_file.drawString(title_x, y, title)
 
     pdf_file.setFont('Helvetica', 8)
@@ -2942,8 +2955,8 @@ def claim_print(request, _id):
                   col_width * area_approver_count, 15, stroke=True)
     title = 'Approved By' if area_approver_count > 0 else ''
     title_width = pdf_file.stringWidth(title, "Helvetica", 8)
-    title_x = 25 + (col_width * (verificator_count + 1)) + \
-        ((col_width * area_approver_count) - title_width) / 2
+    title_x = (25 + (col_width * (verificator_count + 1)) +
+               ((col_width * area_approver_count) - title_width) / 2)
     pdf_file.drawString(title_x, y, title)
 
     pdf_file.setFont('Helvetica', 8)
@@ -2961,7 +2974,7 @@ def claim_print(request, _id):
     title = 'Approved By' if ho_approver_count > 0 else ''
     title_width = pdf_file.stringWidth(title, "Helvetica", 8)
     title_x = 25 + (col_width * (verificator_count + area_approver_count +
-                    checker_count + 1)) + ((col_width * ho_approver_count) - title_width) / 2
+                                 checker_count + 1)) + ((col_width * ho_approver_count) - title_width) / 2
     pdf_file.drawString(title_x, y, title)
 
     pdf_file.setFont('Helvetica', 8)
@@ -2970,7 +2983,7 @@ def claim_print(request, _id):
     title = 'Validated By' if validator_count > 0 else ''
     title_width = pdf_file.stringWidth(title, "Helvetica", 8)
     title_x = 25 + (col_width * (verificator_count + area_approver_count + checker_count +
-                    ho_approver_count + 1)) + ((col_width * validator_count) - title_width) / 2
+                                 ho_approver_count + 1)) + ((col_width * validator_count) - title_width) / 2
     pdf_file.drawString(title_x, y, title)
 
     pdf_file.setFont('Helvetica', 8)
@@ -2979,7 +2992,7 @@ def claim_print(request, _id):
     title = 'Approved By' if finalizer_count > 0 else ''
     title_width = pdf_file.stringWidth(title, "Helvetica", 8)
     title_x = 25 + (col_width * (verificator_count + area_approver_count + checker_count +
-                    ho_approver_count + validator_count + 1)) + ((col_width * finalizer_count) - title_width) / 2
+                                 ho_approver_count + validator_count + 1)) + ((col_width * finalizer_count) - title_width) / 2
     pdf_file.drawString(title_x, y, title)
 
     pdf_file.rect(25, y - 55, col_width, 50, stroke=True)
@@ -3023,8 +3036,8 @@ def claim_print(request, _id):
             pdf_file.rect(25 + (col_width * i), y - 85,
                           col_width, 15, stroke=True)
             pdf_file.setFont("Helvetica", 8)
-            title = 'Date: ' + \
-                approver[i - 1].claim_approval_date.strftime('%d/%m/%Y')
+            title = ('Date: ' +
+                     approver[i - 1].claim_approval_date.strftime('%d/%m/%Y'))
             title_width = pdf_file.stringWidth(title, "Helvetica", 8)
             title_x = 25 + (col_width * i) + (col_width - title_width) / 2
             pdf_file.drawString(title_x, y - 80, title)
@@ -3469,8 +3482,8 @@ def order_add(request, _reg):
             _no.save()
             num = _no.seq_number
 
-        _id = 'INV-1' + format_no + '/' + _reg.upper() + '/SA/' + str(datetime.datetime.now().strftime('%m')) + \
-            '/' + str(datetime.datetime.now().year)
+        _id = ('INV-1' + format_no + '/' + _reg.upper() + '/SA/' + str(datetime.datetime.now().strftime('%m')) +
+               '/' + str(datetime.datetime.now().year))
 
     if request.POST:
         form = FormOrder(request.POST)
@@ -3873,10 +3886,10 @@ def clock_in(request):
     hr = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad']
     bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
            'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
-    tgl = hr[datetime.datetime.now().weekday()] + ', ' + \
-        datetime.datetime.now().strftime('%-d') + ' ' + \
-        bln[int(datetime.datetime.now().strftime('%m')) - 1] + \
-        ' ' + datetime.datetime.now().strftime('%Y')
+    tgl = (hr[datetime.datetime.now().weekday()] + ', ' +
+           datetime.datetime.now().strftime('%-d') + ' ' +
+           bln[int(datetime.datetime.now().strftime('%m')) - 1] +
+           ' ' + datetime.datetime.now().strftime('%Y'))
 
     context = {
         'attendance': attendance(request),
@@ -3896,10 +3909,10 @@ def clock_out(request):
     hr = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad']
     bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
            'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
-    tgl = hr[datetime.datetime.now().weekday()] + ', ' + \
-        datetime.datetime.now().strftime('%-d') + ' ' + \
-        bln[int(datetime.datetime.now().strftime('%m')) - 1] + \
-        ' ' + datetime.datetime.now().strftime('%Y')
+    tgl = (hr[datetime.datetime.now().weekday()] + ', ' +
+           datetime.datetime.now().strftime('%-d') + ' ' +
+           bln[int(datetime.datetime.now().strftime('%m')) - 1] +
+           ' ' + datetime.datetime.now().strftime('%Y'))
 
     context = {
         'attendance': attendance(request),
