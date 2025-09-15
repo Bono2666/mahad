@@ -750,6 +750,12 @@ def submit_attendance(request):
                 attendance.save()
                 print(attendance.photo_out)
 
+            if not settings.DEBUG and request.POST.get('photo'):
+                filename = '../../www/mahad/apps/media/' + 'attendance/' + filename
+                with open(filename, 'wb+') as temp_file:
+                    for chunk in img_data:
+                        temp_file.write(chunk)
+
         return HttpResponseRedirect(reverse('home'))
 
     return render(request, 'home/home.html')
