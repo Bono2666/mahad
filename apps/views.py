@@ -57,13 +57,13 @@ def user_add(request):
         form = FormUser(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            if not settings.DEBUG and form.instance.signature:
-                user = User.objects.get(user_id=form.instance.user_id)
-                my_file = user.signature
-                filename = '../../www/aqiqahon/apps/media/' + my_file.name
-                with open(filename, 'wb+') as temp_file:
-                    for chunk in my_file.chunks():
-                        temp_file.write(chunk)
+            # if not settings.DEBUG and form.instance.signature:
+            #     user = User.objects.get(user_id=form.instance.user_id)
+            #     my_file = user.signature
+            #     filename = '../../www/aqiqahon/apps/media/' + my_file.name
+            #     with open(filename, 'wb+') as temp_file:
+            #         for chunk in my_file.chunks():
+            #             temp_file.write(chunk)
 
             return HttpResponseRedirect(reverse('user-view', args=[form.instance.user_id, ]))
         else:
@@ -750,12 +750,12 @@ def submit_attendance(request):
                 attendance.save()
                 print(attendance.photo_out)
 
-        if not settings.DEBUG and request.POST.get('photo'):
-            my_file = request.POST['photo']
-            filename = '../../www/mahad/apps/media/' + my_file.name
-            with open(filename, 'wb+') as temp_file:
-                for chunk in my_file.chunks():
-                    temp_file.write(chunk)
+        # if not settings.DEBUG and request.POST.get('photo'):
+        #     my_file = request.POST['photo']
+        #     filename = '../../www/mahad/apps/media/' + my_file.name
+        #     with open(filename, 'wb+') as temp_file:
+        #         for chunk in my_file.chunks():
+        #             temp_file.write(chunk)
 
         return HttpResponseRedirect(reverse('home'))
 
