@@ -211,3 +211,10 @@ host.py
 
 # Media
 apps/media/
+
+# pyc
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
