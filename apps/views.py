@@ -57,34 +57,14 @@ def user_add(request):
         form = FormUser(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            # format, imgstr = form.instance.signature.split(';base64,')
-            # ext = format.split('/')[-1]
-            # img_data = base64.b64decode(imgstr)
-            # filename = f"{request.user.user_id}_sign_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
-            # file_path = os.path.join(
-            #     settings.MEDIA_ROOT + '/signature/', filename)
-            # with open(file_path, 'wb') as f:
-            #     f.write(img_data)
 
-            if settings.DEBUG and form.instance.signature:
-                # save to media
+            if form.instance.signature:
                 user = User.objects.get(user_id=form.instance.user_id)
                 my_file = user.signature
-                filename = my_file.name
-                format, imgstr = my_file.read().decode().split(';base64,')
-                img_data = base64.b64decode(imgstr)
-                file_path = '../../www/mahad/apps/media/' + 'signature/' + filename
-                with open(file_path, 'wb+') as f:
-                    for chunk in img_data:
-                        f.write(chunk)
-
-            # if not settings.DEBUG and form.instance.signature:
-            #     user = User.objects.get(user_id=form.instance.user_id)
-            #     my_file = user.signature
-            #     filename = '../../www/aqiqahon/apps/media/' + my_file.name
-            #     with open(filename, 'wb+') as temp_file:
-            #         for chunk in my_file.chunks():
-            #             temp_file.write(chunk)
+                filename = '../../www/mahad/apps/media/' + my_file.name
+                with open(filename, 'wb+') as temp_file:
+                    for chunk in my_file.chunks():
+                        temp_file.write(chunk)
 
             return HttpResponseRedirect(reverse('user-view', args=[form.instance.user_id, ]))
         else:
@@ -209,12 +189,13 @@ def user_update(request, _id):
         form = FormUserUpdate(request.POST, request.FILES, instance=users)
         if form.is_valid():
             form.save()
-            if not settings.DEBUG and users.signature:
+            if users.signature:
                 my_file = users.signature
-                filename = '../../www/aqiqahon/apps/media/' + my_file.name
+                filename = '../../www/mahad/apps/media/' + my_file.name
                 with open(filename, 'wb+') as temp_file:
                     for chunk in my_file.chunks():
                         temp_file.write(chunk)
+
             return HttpResponseRedirect(reverse('user-view', args=[_id, ]))
     else:
         form = FormUserUpdate(instance=users)
