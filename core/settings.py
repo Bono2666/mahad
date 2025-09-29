@@ -86,9 +86,9 @@ DATABASES = {
         'NAME': 'mahad',
         'USER': 'root',
         'PASSWORD': '',
-        # 'NAME': 'u8365310_aqiqahon',
-        # 'USER': 'u8365310_aqiqahon',
-        # 'PASSWORD': 'tn,(s0LM_%}0',
+        # 'NAME': 'u1573131_mahad',
+        # 'USER': 'u1573131_mahad',
+        # 'PASSWORD': '+StI*y!r^bo~=Z;A',
         'HOST': 'localhost',
         'PORT': '3306',
     }
