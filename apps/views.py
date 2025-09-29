@@ -16,6 +16,7 @@ from django.db.models.functions import Concat, Cast
 from . import host
 from django.conf import settings
 from apps.notifications import *
+from geopy.geocoders import Nominatim
 
 
 @login_required(login_url='/login/')
@@ -562,7 +563,7 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
             pho_out=Concat(Value(host.url + 'apps/media/'),
                            'photo_out', output_field=CharField())
         ).values_list(
-            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'pho_in', 'lokasi_pulang', 'pho_out', 'status'
+            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'pho_in', 'lokasi_pulang', 'pho_out', 'status', 'note', 'address_in', 'address_out'
         )
     else:
         attendance = Attendance.objects.filter(
@@ -572,7 +573,7 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
             lokasi_pulang=Concat(Value('https://www.google.com/maps/search/?api=1&query='), Cast('lat_out', CharField()), Value(
                 ','), Cast('long_out', CharField()), output_field=CharField())
         ).values_list(
-            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'photo_in', 'lokasi_pulang', 'photo_out', 'status'
+            'user_id__username', 'absence_date', 'time_in', 'time_out', 'total_hours', 'lokasi_masuk', 'photo_in', 'lokasi_pulang', 'photo_out', 'status', 'note', 'address_in', 'address_out'
         )
 
     # Create a HttpResponse object with the csv data
@@ -589,7 +590,7 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
 
     # Define column headers
     headers = ['Nama', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Durasi Kerja', 'Lokasi Masuk', 'Foto Masuk',
-               'Lokasi Pulang', 'Foto Pulang', 'Status']
+               'Lokasi Pulang', 'Foto Pulang', 'Status', 'Keterangan']
 
     # Define cell formats
     header_format = workbook.add_format({
@@ -604,40 +605,53 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
         {'border': 1, 'num_format': 'dd-mmm-yyyy', 'align': 'left'})
     time_format = workbook.add_format(
         {'border': 1, 'num_format': 'hh:mm', 'align': 'left'})
-    date_back_format = workbook.add_format(
-        {'border': 1, 'num_format': 'dd-mmm-yyyy', 'bg_color': '#a5d223', 'align': 'left'})
-    num_format = workbook.add_format({'border': 1, 'num_format': '#,##0'})
-    num_back_format = workbook.add_format(
-        {'border': 1, 'num_format': '#,##0', 'bg_color': '#a5d223'})
-    process_format = workbook.add_format({'border': 1, 'bg_color': '#fbcf33'})
-    back_format = workbook.add_format({'border': 1, 'bg_color': '#a5d223'})
+    late_time_format = workbook.add_format(
+        {'border': 1, 'num_format': 'hh:mm', 'font_color': '#ea0606', 'align': 'left'})
+    in_format = workbook.add_format({'border': 1, 'bg_color': '#a5d223'})
+    out_format = workbook.add_format({'border': 1, 'bg_color': '#d1d1d1'})
+    late_note_format = workbook.add_format(
+        {'border': 1, 'font_color': 'white', 'bg_color': '#ea0606', 'align': 'left'})
 
     # Set column width
     worksheet.set_column('A:A', 25)
     worksheet.set_column('B:B', 12)
     worksheet.set_column('C:E', 10)
-    worksheet.set_column('F:I', 15)
+    worksheet.set_column('F:F', 30)
+    worksheet.set_column('G:G', 15)
+    worksheet.set_column('H:H', 30)
+    worksheet.set_column('I:I', 15)
     worksheet.set_column('J:J', 10)
+    worksheet.set_column('K:K', 15)
 
     # Write data to XlsxWriter Object
     for idx, record in enumerate(attendance):
         for col_idx, col_value in enumerate(record):
             if idx == 0:
                 # Write the column headers on the first row
-                worksheet.write(idx, col_idx, headers[col_idx], header_format)
+                if col_idx < len(headers):
+                    worksheet.write(
+                        idx, col_idx, headers[col_idx], header_format)
             # Write the data rows
             if col_idx == 1:
                 worksheet.write(idx + 1, col_idx, col_value, date_format)
             elif col_idx == 2:
-                worksheet.write(idx + 1, col_idx, col_value, time_format)
+                if record[10] == 'Terlambat' and col_value:
+                    worksheet.write(idx + 1, col_idx,
+                                    col_value, late_time_format)
+                else:
+                    worksheet.write(idx + 1, col_idx, col_value, time_format)
             elif col_idx == 3:
                 worksheet.write(idx + 1, col_idx, col_value, time_format)
             elif col_idx == 4:
                 worksheet.write(idx + 1, col_idx, col_value, time_format)
             elif col_idx == 5:
                 if col_value != 'https://www.google.com/maps/search/?api=1&query=,':
-                    worksheet.write_url(
-                        idx + 1, col_idx, col_value, cell_format, 'Lihat Lokasi')
+                    if record[11]:
+                        worksheet.write_url(
+                            idx + 1, col_idx, col_value, cell_format, record[11])
+                    else:
+                        worksheet.write_url(
+                            idx + 1, col_idx, col_value, cell_format, 'Lihat Lokasi')
                 else:
                     worksheet.write(idx + 1, col_idx, '', cell_format)
             elif col_idx == 6:
@@ -648,8 +662,12 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
                     worksheet.write(idx + 1, col_idx, '', cell_format)
             elif col_idx == 7:
                 if col_value != 'https://www.google.com/maps/search/?api=1&query=,':
-                    worksheet.write_url(
-                        idx + 1, col_idx, col_value, cell_format, 'Lihat Lokasi')
+                    if record[12]:
+                        worksheet.write_url(
+                            idx + 1, col_idx, col_value, cell_format, record[12])
+                    else:
+                        worksheet.write_url(
+                            idx + 1, col_idx, col_value, cell_format, 'Lihat Lokasi')
                 else:
                     worksheet.write(idx + 1, col_idx, '', cell_format)
             elif col_idx == 8:
@@ -658,8 +676,23 @@ def report_attendance_toxl(request, _from_date, _to_date, _user):
                         idx + 1, col_idx, col_value, cell_format, 'Lihat Foto')
                 else:
                     worksheet.write(idx + 1, col_idx, '', cell_format)
+            elif col_idx == 9:
+                if col_value == 'Masuk':
+                    worksheet.write(idx + 1, col_idx, col_value, in_format)
+                elif col_value == 'Pulang':
+                    worksheet.write(
+                        idx + 1, col_idx, col_value, out_format)
+                else:
+                    worksheet.write(idx + 1, col_idx, col_value, cell_format)
+            elif col_idx == 10:
+                if col_value == 'Terlambat':
+                    worksheet.write(idx + 1, col_idx,
+                                    col_value, late_note_format)
+                else:
+                    worksheet.write(idx + 1, col_idx, col_value, cell_format)
             else:
-                worksheet.write(idx + 1, col_idx, col_value, cell_format)
+                if col_idx < len(headers):
+                    worksheet.write(idx + 1, col_idx, col_value, cell_format)
 
     # Close the workbook before sending the data.
     workbook.close()
@@ -733,9 +766,11 @@ def submit_attendance(request):
                 with open(file_path, 'wb') as f:
                     f.write(img_data)
 
+            geolocator = Nominatim(user_agent="myGeolocator")
+            location = geolocator.reverse(
+                f"{request.POST.get('latitude')}, {request.POST.get('longitude')}")
+
             if request.POST.get('status') == 'Masuk':
-                print(request.POST.get('latitude'), request.POST.get('longitude'),
-                      request.POST.get('status'))
                 Attendance.objects.update_or_create(
                     user_id=request.user.user_id,
                     absence_date=datetime.date.today(),
@@ -743,8 +778,10 @@ def submit_attendance(request):
                         'time_in': datetime.datetime.now(),
                         'lat_in': request.POST.get('latitude'),
                         'long_in': request.POST.get('longitude'),
+                        'address_in': location.address if location else '',
                         'photo_in': 'attendance/' + filename,
                         'status': request.POST.get('status'),
+                        'note': 'Terlambat' if datetime.datetime.now().time() > datetime.time(7, 15, 0) else '',
                     }
                 )
             else:
@@ -753,6 +790,7 @@ def submit_attendance(request):
                 attendance.time_out = datetime.datetime.now()
                 attendance.lat_out = request.POST.get('latitude')
                 attendance.long_out = request.POST.get('longitude')
+                attendance.address_out = location.address if location else ''
                 attendance.photo_out = 'attendance/' + filename
                 attendance.status = request.POST.get('status')
                 attendance.save()

@@ -51,6 +51,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foto Pulang</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,7 +64,7 @@
                                         <h6 class="mb-0 text-sm">{{ item.absence_date|date:"d M Y" }}</h6>
                                     </td>
                                     <td>
-                                        <h6 class="mb-0 text-sm">{{ item.time_in|time:"H:i" }}</h6>
+                                        <h6 class="mb-0 text-sm {% if item.time_in and item.time_in|time:"H:i" > "07:15" %}text-danger{% endif %}">{% if item.time_in %}{{ item.time_in|time:"H:i" }}{% else %}-{% endif %}</h6>
                                     </td>
                                     <td>
                                         <h6 class="mb-0 text-sm">{% if item.time_out %}{{ item.time_out|time:"H:i" }}{% else %}-{% endif %}</h6>
@@ -76,7 +77,7 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
                                                     {% if item.lat_in and item.long_in %}
-                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_in }},{{ item.long_in }}" target="_blank" class="text-body">Lihat Lokasi</a>
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_in }},{{ item.long_in }}" target="_blank" class="text-body">{% if item.address_in %}{{ item.address_in|truncatechars:30 }}{% else %}Lihat Lokasi{% endif %}</a>
                                                     {% else %}
                                                     -
                                                     {% endif %}
@@ -96,7 +97,7 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm">
                                                     {% if item.lat_out and item.long_out %}
-                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_out }},{{ item.long_out }}" target="_blank" class="text-body">Lihat Lokasi</a>
+                                                    <a href="https://www.google.com/maps/search/?api=1&query={{ item.lat_out }},{{ item.long_out }}" target="_blank" class="text-body">{% if item.address_out %}{{ item.address_out|truncatechars:30 }}{% else %}Lihat Lokasi{% endif %}</a>
                                                     {% else %}
                                                     -
                                                     {% endif %}
@@ -111,8 +112,13 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <h6 class="mb-0 text-sm">{{ item.status }}</h6>
+                                    <td class="pt-1">
+                                        <h6 class="badge badge-notification rounded-pill {% if item.status == 'Masuk' %}bg-primary{% else %}bg-dark{% endif %} text-xxs my-0">{{ item.status }}</h6>
+                                    </td>
+                                    <td class="pt-1">
+                                        {% if item.note %}
+                                        <h6 class="badge badge-notification rounded-pill bg-danger text-xxs my-0">{{ item.note }}</h6>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -251,7 +257,7 @@
         } else {
             $('#checklistTable').DataTable({
                 "order": [[ 0, "asc" ]],
-                "scrollX": false,
+                "scrollX": true,
                 "scrollCollapse": true,
                 "lengthChange": false,
                 "scrollY": "60vh",
